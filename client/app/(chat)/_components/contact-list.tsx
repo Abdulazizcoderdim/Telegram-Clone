@@ -2,6 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import useCurrentContact from '@/hooks/use-current';
+import { cn } from '@/lib/utils';
 import { IUser } from '@/types';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
@@ -13,15 +15,24 @@ type Props = {
 
 const ContactList: FC<Props> = ({ contacts }) => {
   const router = useRouter();
+  const { currentContact, setCurrentContact } = useCurrentContact();
 
   const renderContact = (contact: IUser) => {
     const onChat = () => {
+      if (currentContact?._id === contact._id) return;
+
+      setCurrentContact(contact);
       router.push(`/?chat=${contact._id}`);
     };
 
     return (
       <div
-        className="flex justify-between items-center cursor-pointer hover:bg-secondary/50 p-2"
+        className={cn(
+          'flex justify-between items-center cursor-pointer hover:bg-secondary/50 p-2',
+          {
+            'bg-secondary/50': currentContact?._id === contact._id,
+          }
+        )}
         onClick={onChat}
       >
         <div className="flex items-center gap-2">
