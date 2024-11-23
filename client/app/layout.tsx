@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/components/provider/theme-provider';
 import type { Metadata } from 'next';
 import { Sour_Gummy } from 'next/font/google';
 import './globals.css';
@@ -27,7 +28,14 @@ export default function RootLayout({
         className={`${sourGummy.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
