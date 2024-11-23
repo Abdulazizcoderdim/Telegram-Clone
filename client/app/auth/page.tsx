@@ -1,3 +1,4 @@
+import { ModeToggle } from '@/components/shared/mode-toggle';
 import { FaTelegram } from 'react-icons/fa';
 import Social from './_component/social';
 import StateAuth from './_component/state';
@@ -8,8 +9,8 @@ const Page = () => {
       <FaTelegram size={120} className="text-blue-500" />
       <div>
         <h1 className="text-4xl font-bold">Telegram</h1>
+        <ModeToggle />
       </div>
-
       <StateAuth />
       <Social />
     </div>

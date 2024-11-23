@@ -33,6 +33,7 @@ const Verify = () => {
 
   function onSubmit(values: z.infer<typeof otpSchema>) {
     console.log(values);
+    window.location.href = '/';
   }
 
   return (
