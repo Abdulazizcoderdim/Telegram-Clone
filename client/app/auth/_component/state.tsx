@@ -8,6 +8,7 @@ const StateAuth = () => {
       {/* <SignIn /> */}
       <Verify />
     </>
+    
   );
 };
 
