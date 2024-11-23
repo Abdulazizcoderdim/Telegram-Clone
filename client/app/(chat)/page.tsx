@@ -1,17 +1,41 @@
+'use client';
+
+import { useCurrentContact } from '@/hooks/use-current';
 import { IUser } from '@/types';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import AddContact from './_components/add-contact';
 import ContactList from './_components/contact-list';
 
 const HomePage = () => {
-  return (
-    <div className="w-80 h-screen border-r fixed inset-0 z-50">
-      {/* Loading */}
-      {/* <div className="w-full h-[95vh] flex justify-center items-center">
-        <Loader2 size={50} className="animate-spin" />
-      </div> */}
+  const { currentContact } = useCurrentContact();
+  const router = useRouter();
 
-      {/* contact-list */}
-      <ContactList contacts={contacts} />
-    </div>
+  useEffect(() => {
+    router.replace('/');
+  }, []);
+
+  return (
+    <>
+      <div className="w-80 h-screen border-r fixed inset-0 z-50">
+        {/* Loading */}
+        {/* <div className="w-full h-[95vh] flex justify-center items-center">
+         <Loader2 size={50} className="animate-spin" />
+        </div> */}
+
+        {/* contact-list */}
+        <ContactList contacts={contacts} />
+      </div>
+
+      {/* chat area */}
+      <div className="pl-80 w-full">
+        {/* add contact */}
+        {!currentContact?._id && <AddContact />}
+
+        {/* chat */}
+        {currentContact?._id && <div>Chat</div>}
+      </div>
+    </>
   );
 };
 

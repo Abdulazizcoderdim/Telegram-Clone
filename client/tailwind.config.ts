@@ -73,6 +73,7 @@ export default {
       },
       fontFamily: {
         sourGummy: ['var(--font-sour-gummy)', 'sans-serif'],
+        spaceGrotesk: ['var(--font-space-grotesk)', 'sans-serif'],
       },
       borderRadius: {
         lg: 'var(--radius)',
