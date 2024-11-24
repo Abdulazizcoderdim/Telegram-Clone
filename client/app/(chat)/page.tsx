@@ -1,19 +1,37 @@
 'use client';
 
 import { useCurrentContact } from '@/hooks/use-current';
+import { emailSchema } from '@/lib/validation';
 import { IUser } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import AddContact from './_components/add-contact';
+import Chat from './_components/chat';
 import ContactList from './_components/contact-list';
+import TopChat from './_components/top-chat';
 
 const HomePage = () => {
   const { currentContact } = useCurrentContact();
   const router = useRouter();
 
+  const contactForm = useForm<z.infer<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
   useEffect(() => {
     router.replace('/');
   }, []);
+
+  const onCreateContact = (values: z.infer<typeof emailSchema>) => {
+    // API call
+    console.log(values);
+  };
 
   return (
     <>
@@ -30,10 +48,22 @@ const HomePage = () => {
       {/* chat area */}
       <div className="pl-80 w-full">
         {/* add contact */}
-        {!currentContact?._id && <AddContact />}
+        {!currentContact?._id && (
+          <AddContact
+            contactForm={contactForm}
+            onCreateContact={onCreateContact}
+          />
+        )}
 
         {/* chat */}
-        {currentContact?._id && <div>Chat</div>}
+        {currentContact?._id && (
+          <div className="w-full relative">
+            {/* top chat */}
+            <TopChat />
+            {/* chat messages */}
+            <Chat />
+          </div>
+        )}
       </div>
     </>
   );
