@@ -44,6 +44,7 @@ const HomePage = () => {
         {/* contact-list */}
         <ContactList contacts={contacts} />
       </div>
+      
 
       {/* chat area */}
       <div className="pl-80 w-full">
