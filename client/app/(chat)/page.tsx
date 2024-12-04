@@ -1,7 +1,7 @@
 'use client';
 
 import { useCurrentContact } from '@/hooks/use-current';
-import { emailSchema } from '@/lib/validation';
+import { emailSchema, messageSchema } from '@/lib/validation';
 import { IUser } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -24,11 +24,24 @@ const HomePage = () => {
     },
   });
 
+  const messageForm = useForm<z.infer<typeof messageSchema>>({
+    resolver: zodResolver(messageSchema),
+    defaultValues: {
+      text: '',
+      image: '',
+    },
+  });
+
   useEffect(() => {
     router.replace('/');
   }, []);
 
   const onCreateContact = (values: z.infer<typeof emailSchema>) => {
+    // API call
+    console.log(values);
+  };
+
+  const onSendMessage = (values: z.infer<typeof messageSchema>) => {
     // API call
     console.log(values);
   };
@@ -44,7 +57,6 @@ const HomePage = () => {
         {/* contact-list */}
         <ContactList contacts={contacts} />
       </div>
-      
 
       {/* chat area */}
       <div className="pl-80 w-full">
@@ -62,7 +74,7 @@ const HomePage = () => {
             {/* top chat */}
             <TopChat />
             {/* chat messages */}
-            <Chat />
+            <Chat messageForm={messageForm} onSendMessage={onSendMessage} />
           </div>
         )}
       </div>
@@ -92,4 +104,5 @@ const contacts: IUser[] = [
     avatar: 'bob-avatar.jpg', // add avatar property
   },
 ];
+
 export default HomePage;

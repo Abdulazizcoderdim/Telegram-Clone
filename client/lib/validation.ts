@@ -11,3 +11,8 @@ export const otpSchema = z
     }),
   })
   .merge(emailSchema);
+
+export const messageSchema = z.object({
+  text: z.string().min(1, { message: 'Please enter a message.' }),
+  image: z.string().optional(),
+});
