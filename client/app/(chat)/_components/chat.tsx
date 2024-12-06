@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { messageSchema } from '@/lib/validation';
-import { Paperclip } from 'lucide-react';
+import { Paperclip, Send, Smile } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,7 +17,17 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
       {/* Loading */}
       {/* <ChatLoading /> */}
       {/* Messages */}
-      {/* <MessageCard /> */}
+      {/* <MessageCard isReceived /> */}
+
+      {/* Start conversation */}
+      {/* <div className="w-full h-[88vh] flex items-center justify-center">
+        <div
+          onClick={() => onSendMessage({ text: '👋' })}
+          className="text-[100px] cursor-pointer select-none"
+        >
+          👋
+        </div>
+      </div> */}
 
       {/* Input */}
       <Form {...messageForm}>
@@ -28,7 +38,7 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
           <Button
             size={'icon'}
             type="button"
-            className="rounded-none "
+            className="rounded-none"
             variant={'secondary'}
           >
             <Paperclip />
@@ -44,11 +54,23 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
                     className="h-9 rounded-none border-l border-l-foreground border-r border-r-muted-foreground resize-none  bg-secondary"
                     value={field.value}
                     onBlur={() => field.onBlur()}
+                    onChange={e => field.onChange(e.target.value)}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
+          <Button
+            className="rounded-none"
+            type="button"
+            variant={'secondary'}
+            size={'icon'}
+          >
+            <Smile />
+          </Button>
+          <Button className="rounded-none" type="submit" size={'icon'}>
+            <Send />
+          </Button>
         </form>
       </Form>
     </div>
