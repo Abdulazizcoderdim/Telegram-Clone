@@ -84,24 +84,36 @@ const HomePage = () => {
 
 const contacts: IUser[] = [
   {
-    email: 'johnjanejohnjanjeohnjanejohnjanejohnjanjeohnjane@example.com',
+    email: 'johndoeee@example.com',
     _id: '1',
     avatar: 'logo.png', // add avatar property
+    firstName: 'John',
+    lastName: 'Jane',
+    bio: 'Hello world',
   },
   {
     email: 'jane@example.com',
     _id: '2',
     avatar: 'jane-avatar.jpg', // add avatar property
+    firstName: 'Jane',
+    lastName: 'Doe',
+    bio: 'Hello world',
   },
   {
     email: 'ali@example.com',
     _id: '3',
     avatar: 'ali-avatar.jpg', // add avatar property
+    firstName: 'Ali',
+    lastName: 'Ahmed',
+    bio: 'Hello world',
   },
   {
     email: 'bob@example.com',
     _id: '4',
     avatar: 'bob-avatar.jpg', // add avatar property
+    firstName: 'Bob',
+    lastName: 'Smith',
+    bio: 'Hello world',
   },
 ];
 
