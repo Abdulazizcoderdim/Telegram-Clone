@@ -1,8 +1,17 @@
+import { ModeToggle } from '@/components/shared/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { messageSchema } from '@/lib/validation';
+import emojies from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import { Paperclip, Send, Smile } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -12,6 +21,8 @@ interface Props {
 }
 
 const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="flex flex-col justify-end z-40 min-h-[92vh]">
       {/* Loading */}
@@ -60,17 +71,28 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
               </FormItem>
             )}
           />
-          <Button
-            className="rounded-none"
-            type="button"
-            variant={'secondary'}
-            size={'icon'}
-          >
-            <Smile />
-          </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="rounded-none"
+                type="button"
+                variant={'secondary'}
+                size={'icon'}
+              >
+                <Smile />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 border-none rounded-md absolute right-6 bottom-0">
+              <Picker data={emojies} theme={resolvedTheme} />
+            </PopoverContent>
+          </Popover>
+
           <Button className="rounded-none" type="submit" size={'icon'}>
             <Send />
           </Button>
+
+          <ModeToggle />
         </form>
       </Form>
     </div>
