@@ -1,4 +1,3 @@
-import { ModeToggle } from '@/components/shared/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -12,6 +11,7 @@ import emojies from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { Paperclip, Send, Smile } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -22,6 +22,25 @@ interface Props {
 
 const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
   const { resolvedTheme } = useTheme();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleEmojiSelect = (emoji: string) => {
+    const input = inputRef.current;
+
+    if (!input) return;
+
+    const text = messageForm.getValues('text');
+    const start = input.selectionStart ?? 0;
+    const end = input.selectionEnd ?? 0;
+
+    const newText = text.slice(0, start) + emoji + text.slice(end);
+
+    messageForm.setValue('text', newText);
+
+    setTimeout(() => {
+      input.setSelectionRange(start + emoji.length, start + emoji.length);
+    }, 0);
+  };
 
   return (
     <div className="flex flex-col justify-end z-40 min-h-[92vh]">
@@ -61,6 +80,7 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
               <FormItem className="w-full">
                 <FormControl>
                   <Input
+                    ref={inputRef}
                     placeholder="Type a message"
                     className="h-9 rounded-none border-l border-l-foreground border-r border-r-muted-foreground resize-none  bg-secondary"
                     value={field.value}
@@ -84,15 +104,19 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 border-none rounded-md absolute right-6 bottom-0">
-              <Picker data={emojies} theme={resolvedTheme} />
+              <Picker
+                onEmojiSelect={(emoji: { native: string }) =>
+                  handleEmojiSelect(emoji.native)
+                }
+                data={emojies}
+                theme={resolvedTheme}
+              />
             </PopoverContent>
           </Popover>
 
           <Button className="rounded-none" type="submit" size={'icon'}>
             <Send />
           </Button>
-
-          <ModeToggle />
         </form>
       </Form>
     </div>
