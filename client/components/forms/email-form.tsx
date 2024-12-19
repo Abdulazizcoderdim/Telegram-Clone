@@ -14,6 +14,7 @@ import {
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
+
 const EmailForm = () => {
   const [verify, setVerify] = useState(false);
 
