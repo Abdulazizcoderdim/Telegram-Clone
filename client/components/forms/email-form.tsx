@@ -1,5 +1,6 @@
 import { oldEmailSchema, otpSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -12,6 +13,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '../ui/input-otp';
 import { Label } from '../ui/label';
 
 
@@ -45,7 +47,7 @@ const EmailForm = () => {
     console.log(values);
   }
 
-  return (
+  return !verify ? (
     <Form {...emailForm}>
       <form
         onSubmit={emailForm.handleSubmit(onEmailSubmit)}
@@ -87,7 +89,66 @@ const EmailForm = () => {
         </Button>
       </form>
     </Form>
-  );
+  ) : (
+    <Form {...otpForm}>
+      <form onSubmit={otpForm.handleSubmit(onVerifySubmit)} className='space-y-2'>
+        <Label>New email</Label>
+        <Input className='h-10 bg-secondary' disabled value={emailForm.watch('email')}/>
+        
+        <FormField
+            control={otpForm.control}
+            name="otp"
+            render={({ field }) => (
+              <FormItem>
+                <Label>One-Time Password</Label>
+                <FormControl>
+                  <InputOTP
+                    pattern={REGEXP_ONLY_DIGITS}
+                    maxLength={6}
+                    {...field}
+                    className="w-full"
+                  >
+                    <InputOTPGroup className="w-full">
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={0}
+                      />
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={1}
+                      />
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={2}
+                      />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup className="w-full">
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={3}
+                      />
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={4}
+                      />
+                      <InputOTPSlot
+                        className="w-full h-10 text-xl dark:bg-primary-foreground bg-secondary"
+                        index={5}
+                      />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormMessage className="text-xs text-red-500" />
+              </FormItem>
+            )}
+          />
+          <Button className='w-full' type='submit'>
+            Submit
+          </Button>
+      </form>
+    </Form>
+  )
 };
 
 export default EmailForm;
