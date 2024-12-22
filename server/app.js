@@ -3,6 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const { default: mongoose } = require('mongoose');
+const errorMiddleware = require('./middlewares/error.middleware');
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.use(cors());
 
 // Routes
 app.use('/api', require('./routes/index'));
+
+app.use(errorMiddleware);
 
 const bootstrap = async () => {
   try {
