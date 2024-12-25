@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const otpModel = require('../model/otp.model');
+const BaseError = require('../errors/base.errors');
 
 class MailService {
   constructor() {
@@ -47,7 +48,23 @@ class MailService {
     });
   }
 
-  async verifyOtp(to, subject, text) {}
+  async verifyOtp(email, otp) {
+    const otpData = await otpModel.find({ email });
+    if (!otpData) throw BaseError.BadRequest('Otp not found');
+
+    const currentOtp = otpData[otpData.length - 1];
+    if (!currentOtp) throw BaseError.BadRequest('Otp not found');
+
+    if (currentOtp.expireAt < new Date()) {
+      throw BaseError.BadRequest('Your otp is expired');
+    }
+
+    const isValid = await bcrypt.compare(otp.toString(), currentOtp.otp);
+    if (!isValid) throw BaseError.BadRequest('Invalid otp entered');
+
+    await otpModel.deleteMany({ email });
+    return true;
+  }
 }
 
 module.exports = new MailService();

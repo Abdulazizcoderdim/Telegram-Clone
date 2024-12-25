@@ -1,0 +1,17 @@
+meta {
+  name: Verify
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:4000/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "coderdim2@gmail.com"
+  }
+}
