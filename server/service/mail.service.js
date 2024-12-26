@@ -41,7 +41,7 @@ class MailService {
         <p style="font-size: 24px; color: #4CAF50; font-weight: bold; margin: 0;">${otp}</p>
       </div>
       <div style="padding-top: 20px; border-top: 1px solid #ddd; text-align: center;">
-        <p style="font-size: 12px; color: #999; margin: 0;">If you did not request this, please ignore this email.</p>
+        <p style="font-size: 12px; color: #999; margin: 0;">This code is valid for 5 minutes.</p>
       </div>
     </div>
   `,
