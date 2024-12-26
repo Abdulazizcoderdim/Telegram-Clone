@@ -11,6 +11,8 @@ router.group('/auth', route => {
 });
 
 router.group('/user', route => {
+  route.get('/messages/:contactId', userController.getMessages);
+
   route.post('/create-message', userController.createMessage);
 });
 
