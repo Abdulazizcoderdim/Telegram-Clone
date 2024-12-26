@@ -1,4 +1,3 @@
-const BaseError = require('../errors/base.errors');
 const userModel = require('../model/user.model');
 const mailService = require('../service/mail.service');
 

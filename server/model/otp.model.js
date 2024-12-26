@@ -1,9 +1,9 @@
 const { Schema, model } = require('mongoose');
 
 const otpSchema = new Schema({
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
   otp: { type: String, require: true },
-  expireAt: { type: Date, default: Date.now, expires: 600 },
+  expireAt: { type: Date },
 });
 
 module.exports = model('Otp', otpSchema);
