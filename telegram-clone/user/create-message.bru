@@ -1,0 +1,19 @@
+meta {
+  name: create-message
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:4000/api/user/create-message
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "sender": "676bbe0c4b9c1aae71d0cdb1",
+    "receiver": "676bbe1c4b9c1aae71d0cdb6",
+    "text": "Salom"
+  }
+}
