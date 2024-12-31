@@ -60,7 +60,7 @@ class UserController {
   async createContact(req, res, next) {
     try {
       const { email } = req.body;
-      const userId = '676bbe1c4b9c1aae71d0cdb6';
+      const userId = '676bbe0c4b9c1aae71d0cdb1';
 
       const user = await userModel.findById(userId);
 
@@ -69,7 +69,19 @@ class UserController {
       if (!contact)
         throw BaseError.BadRequest('User with this email not exist');
 
-      
+      if (user.email === contact.email)
+        throw BaseError.BadRequest('You can not add yourself as a contact');
+
+      if (user.contacts.includes(contact._id))
+        throw BaseError.BadRequest('Contact already exist');
+
+      user.contacts.push(contact._id);
+      contact.contacts.push(userId);
+
+      await user.save();
+      await contact.save();
+
+      res.status(200).json({ message: 'Contact added successfully', contact });
     } catch (error) {
       next(error);
     }
