@@ -1,5 +1,7 @@
+const BaseError = require('../errors/base.errors');
 const { CONST } = require('../lib/constants');
 const messageModel = require('../model/message.model');
+const userModel = require('../model/user.model');
 
 class UserController {
   // [GET]
@@ -54,5 +56,24 @@ class UserController {
       next(error);
     }
   }
+
+  async createContact(req, res, next) {
+    try {
+      const { email } = req.body;
+      const userId = '676bbe1c4b9c1aae71d0cdb6';
+
+      const user = await userModel.findById(userId);
+
+      const contact = await userModel.findOne({ email });
+
+      if (!contact)
+        throw BaseError.BadRequest('User with this email not exist');
+
+      
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new UserController();
+// 5:03
