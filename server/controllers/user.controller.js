@@ -81,11 +81,11 @@ class UserController {
       await user.save();
       await contact.save();
 
-      res.status(200).json({ message: 'Contact added successfully', contact });
+      res.status(201).json({ message: 'Contact added successfully', contact });
     } catch (error) {
       next(error);
     }
   }
 }
 module.exports = new UserController();
-// 5:03
+// 5:07
