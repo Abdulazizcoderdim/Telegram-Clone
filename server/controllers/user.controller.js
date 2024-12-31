@@ -40,7 +40,7 @@ class UserController {
   async getContact(req, res, next) {
     try {
       const userId = '676bbe1c4b9c1aae71d0cdb6';
-      
+
 			const contacts = await userModel.findById(userId).populate('contacts');
       const allContacts = contacts.contacts.map(contact => contact.toObject());
 
@@ -113,6 +113,15 @@ class UserController {
       res.status(201).json({ message: 'Contact added successfully', contact });
     } catch (error) {
       next(error);
+    }
+  }
+
+  // PUT
+  async updateMessage(req, res, next){
+    try {
+      
+    } catch (error) {
+      next(error)
     }
   }
 }
