@@ -36,6 +36,15 @@ class UserController {
       next(error);
     }
   }
+
+  async getContact(req, res, next) {
+    try {
+      
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // [POST]
   async createMessage(req, res, next) {
     try {
