@@ -39,7 +39,27 @@ class UserController {
 
   async getContact(req, res, next) {
     try {
+      const userId = '676bbe1c4b9c1aae71d0cdb6';
       
+			const contacts = await userModel.findById(userId).populate('contacts');
+      const allContacts = contacts.contacts.map(contact => contact.toObject());
+
+      for (const contact of allContacts) {
+        const lastMessage = await messageModel
+          .findOne({
+            $or: [
+              { sender: userId, receiver: contact._id },
+              { sender: contact._id, receiver: userId },
+            ],
+          })
+          .populate({ path: 'sender' })
+          .populate({ path: 'receiver' })
+          .sort({ createdAt: -1 });
+
+        contact.lastMessage = lastMessage;
+      }
+
+      return res.status(200).json({ contacts: allContacts });
     } catch (error) {
       next(error);
     }
