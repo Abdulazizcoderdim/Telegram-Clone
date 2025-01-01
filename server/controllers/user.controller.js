@@ -41,7 +41,7 @@ class UserController {
     try {
       const userId = '676bbe1c4b9c1aae71d0cdb6';
 
-			const contacts = await userModel.findById(userId).populate('contacts');
+      const contacts = await userModel.findById(userId).populate('contacts');
       const allContacts = contacts.contacts.map(contact => contact.toObject());
 
       for (const contact of allContacts) {
@@ -117,11 +117,20 @@ class UserController {
   }
 
   // PUT
-  async updateMessage(req, res, next){
+  async updateMessage(req, res, next) {
     try {
-      
+      const { messageId } = req.params;
+      const { text } = req.body;
+
+      const updatedMessage = await messageModel.findByIdAndUpdate(
+        messageId,
+        { text },
+        { new: true }
+      );
+
+      res.status(200).json({ updatedMessage });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }
