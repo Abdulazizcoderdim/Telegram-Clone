@@ -133,6 +133,17 @@ class UserController {
       next(error);
     }
   }
+
+  // DELETE
+  async deleteMessage(req, res, next) {
+    try {
+      const { messageId } = req.params;
+      await messageModel.findByIdAndDelete(messageId);
+      res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new UserController();
 // 5:07

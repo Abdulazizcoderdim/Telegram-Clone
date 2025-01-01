@@ -18,6 +18,8 @@ router.group('/user', route => {
   route.post('/contact', userController.createContact);
 
   route.put('/message/:messageId', userController.updateMessage);
+  
+  route.delete('/message/:messageId', userController.deleteMessage);
 });
 
 module.exports = router;
