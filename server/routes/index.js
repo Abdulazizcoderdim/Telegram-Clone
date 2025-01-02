@@ -17,6 +17,7 @@ router.group('/user', route => {
   route.post('/message', userController.createMessage);
   route.post('/contact', userController.createContact);
   route.post('/reaction', userController.createReaction);
+  route.post('/send-otp', userController.sendOTP);
 
   route.put('/profile', userController.updateProfile);
   route.put('/message/:messageId', userController.updateMessage);

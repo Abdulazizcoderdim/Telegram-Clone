@@ -2,6 +2,7 @@ const BaseError = require('../errors/base.errors');
 const { CONST } = require('../lib/constants');
 const messageModel = require('../model/message.model');
 const userModel = require('../model/user.model');
+const mailService = require('../service/mail.service');
 
 class UserController {
   // [GET]
@@ -128,6 +129,20 @@ class UserController {
       );
 
       res.status(201).json({ updatedMessage });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendOTP(req, res, next) {
+    try {
+      const { email } = req.body;
+      const existingUser = await userModel.findOne({ email });
+      if (!existingUser)
+        throw BaseError.BadRequest('User with this email not exist');
+
+      await mailService.sendOtp(email);
+      res.status(200).json({ message: 'OTP sent successfully' });
     } catch (error) {
       next(error);
     }
