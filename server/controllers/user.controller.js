@@ -151,6 +151,16 @@ class UserController {
     }
   }
 
+  async updateProfile(req, res, next) {
+    try {
+      const { userId, ...payload } = req.body;
+      await userModel.findByIdAndUpdate(userId, payload);
+      res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // DELETE
   async deleteMessage(req, res, next) {
     try {
