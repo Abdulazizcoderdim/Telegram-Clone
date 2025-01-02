@@ -148,6 +148,26 @@ class UserController {
     }
   }
 
+  async readMessage(req, res, next) {
+    try {
+      const { messages } = req.body;
+      const allMessages = [];
+
+      for (const message of messages) {
+        const updatedMessage = await messageModel.findByIdAndUpdate(
+          message._id,
+          { status: CONST.READ },
+          { new: true }
+        );
+        allMessages.push(updatedMessage);
+      }
+
+      res.status(200).json({ messages: allMessages });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // PUT
   async updateMessage(req, res, next) {
     try {

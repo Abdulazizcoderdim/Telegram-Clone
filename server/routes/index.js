@@ -14,6 +14,7 @@ router.group('/user', route => {
   route.get('/contacts', userController.getContact);
   route.get('/messages/:contactId', userController.getMessages);
 
+  route.post('/message-read', userController.readMessage);
   route.post('/message', userController.createMessage);
   route.post('/contact', userController.createContact);
   route.post('/reaction', userController.createReaction);
