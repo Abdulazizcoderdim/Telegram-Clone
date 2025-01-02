@@ -138,8 +138,8 @@ class UserController {
     try {
       const { email } = req.body;
       const existingUser = await userModel.findOne({ email });
-      if (!existingUser)
-        throw BaseError.BadRequest('User with this email not exist');
+      if (existingUser)
+        throw BaseError.BadRequest('User with this email already exist');
 
       await mailService.sendOtp(email);
       res.status(200).json({ message: 'OTP sent successfully' });
@@ -171,6 +171,26 @@ class UserController {
       const { userId, ...payload } = req.body;
       await userModel.findByIdAndUpdate(userId, payload);
       res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateEmail(req, res, next) {
+    try {
+      const { email, otp } = req.body;
+      const result = await mailService.verifyOtp(email, otp);
+      if (result) {
+        const userId = '676bbe1c4b9c1aae71d0cdb6';
+        const user = await userModel.findByIdAndUpdate(
+          userId,
+          { email },
+          {
+            new: true,
+          }
+        );
+        res.status(200).json({ user });
+      }
     } catch (error) {
       next(error);
     }

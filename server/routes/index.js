@@ -21,6 +21,7 @@ router.group('/user', route => {
 
   route.put('/profile', userController.updateProfile);
   route.put('/message/:messageId', userController.updateMessage);
+  route.put('/email', userController.updateEmail);
 
   route.delete('/message/:messageId', userController.deleteMessage);
 });
