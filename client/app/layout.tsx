@@ -1,4 +1,6 @@
+import QueryProvider from '@/components/provider/query-provider';
 import { ThemeProvider } from '@/components/provider/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
 import { Sour_Gummy } from 'next/font/google';
 import './globals.css';
@@ -23,20 +25,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${sourGummy.variable} antialiased`}
-        suppressHydrationWarning
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
+    <QueryProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${sourGummy.variable} antialiased`}
+          suppressHydrationWarning
         >
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main>{children}</main>
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    </QueryProvider>
   );
 }
