@@ -206,6 +206,16 @@ class UserController {
       next(error);
     }
   }
+
+  async deleteUser(req, res, next) {
+    try {
+      const userId = '6766edb6da474eba62d6d486';
+      await userModel.findByIdAndDelete(userId);
+      res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new UserController();
 // 5:07
