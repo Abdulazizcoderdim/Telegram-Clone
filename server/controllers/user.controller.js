@@ -116,6 +116,23 @@ class UserController {
     }
   }
 
+  async createReaction(req, res, next) {
+    try {
+      const { messageId, reaction } = req.body;
+      const updatedMessage = await messageModel.findByIdAndUpdate(
+        messageId,
+        {
+          reaction,
+        },
+        { new: true }
+      );
+
+      res.status(201).json({ updatedMessage });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // PUT
   async updateMessage(req, res, next) {
     try {

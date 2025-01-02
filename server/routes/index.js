@@ -16,6 +16,7 @@ router.group('/user', route => {
 
   route.post('/message', userController.createMessage);
   route.post('/contact', userController.createContact);
+  route.post("/reaction", userController.createReaction)
 
   route.put('/message/:messageId', userController.updateMessage);
   
