@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/use-auth';
-import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { otpSchema } from '@/lib/validation';
 import { IUser } from '@/types';
@@ -45,7 +44,7 @@ const Verify = () => {
       return data;
     },
     onSuccess: ({ user }) => {
-      toast({ description: 'Verification successful.' });
+      console.log(user);
     },
   });
 
