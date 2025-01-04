@@ -14,13 +14,20 @@ export const authOptions: NextAuthOptions = {
         return user;
       },
     }),
+    // GithubProvider({
+    //   clientId: process.env.GITHUB_CLIENT_ID!,
+    //   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    // }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
   ],
   callbacks: {
     async session({ session }) {
       await connectToDatabase();
-      const isExistingUser = await User.exists({ email: session.user?.email });
-
-      if (isExistingUser) {
+      const isExistingUser = await User.findOne({ email: session.user?.email });
+      if (!isExistingUser) {
         const user = await User.create({
           email: session.user?.email,
           isVerified: true,

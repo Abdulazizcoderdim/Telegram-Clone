@@ -1,4 +1,5 @@
 import QueryProvider from '@/components/provider/query-provider';
+import SessionProvider from '@/components/provider/session-provider';
 import { ThemeProvider } from '@/components/provider/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
@@ -25,23 +26,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <QueryProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${sourGummy.variable} antialiased`}
-          suppressHydrationWarning
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
+    <SessionProvider>
+      <QueryProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body
+            className={`${sourGummy.variable} antialiased`}
+            suppressHydrationWarning
           >
-            <main>{children}</main>
-            <Toaster />
-          </ThemeProvider>
-        </body>
-      </html>
-    </QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main>{children}</main>
+              <Toaster />
+            </ThemeProvider>
+          </body>
+        </html>
+      </QueryProvider>
+    </SessionProvider>
   );
 }

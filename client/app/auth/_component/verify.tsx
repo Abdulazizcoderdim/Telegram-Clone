@@ -15,17 +15,21 @@ import {
 } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/use-auth';
+import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { otpSchema } from '@/lib/validation';
 import { IUser } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const Verify = () => {
   const { email } = useAuth();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -44,7 +48,8 @@ const Verify = () => {
       return data;
     },
     onSuccess: ({ user }) => {
-      console.log(user);
+      signIn('credentials', { email: user.email, callbackUrl: '/' });
+      toast({ description: 'You have successfully verified your account.' });
     },
   });
 
