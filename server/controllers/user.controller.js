@@ -188,8 +188,9 @@ class UserController {
 
   async updateProfile(req, res, next) {
     try {
-      const { userId, ...payload } = req.body;
-      await userModel.findByIdAndUpdate(userId, payload);
+      const user = req.user;
+      console.log(user);
+      await userModel.findByIdAndUpdate(user._id, req.body);
       res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
       next(error);

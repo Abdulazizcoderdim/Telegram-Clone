@@ -1,5 +1,6 @@
 const authController = require('../controllers/auth.controller');
 const userController = require('../controllers/user.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 const router = require('express').Router();
 
@@ -20,7 +21,7 @@ router.group('/user', route => {
   route.post('/reaction', userController.createReaction);
   route.post('/send-otp', userController.sendOTP);
 
-  route.put('/profile', userController.updateProfile);
+  route.put('/profile', authMiddleware, userController.updateProfile);
   route.put('/message/:messageId', userController.updateMessage);
   route.put('/email', userController.updateEmail);
 
