@@ -2,7 +2,6 @@ import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { generateToken } from '@/lib/generate-token';
 import { oldEmailSchema, otpSchema } from '@/lib/validation';
-import { IError } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
@@ -65,15 +64,6 @@ const EmailForm = () => {
       toast({ description: 'OTP sent to your email' });
       otpForm.setValue('email', email);
       setVerify(true);
-    },
-    onError: (error: IError) => {
-      if (error.response?.data?.message)
-        return toast({
-          description: error.response.data.message,
-          variant: 'destructive',
-        });
-
-      toast({ description: 'Something went wrong, please try again' });
     },
   });
 
