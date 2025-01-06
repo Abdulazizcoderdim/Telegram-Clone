@@ -139,10 +139,12 @@ class UserController {
       const { email } = req.body;
       const existingUser = await userModel.findOne({ email });
       if (existingUser)
-        throw BaseError.BadRequest('User with this email already exist');
+        throw BaseError.BadRequest(
+          'Please enter another email address that is already registered with this email address'
+        );
 
       await mailService.sendOtp(email);
-      res.status(200).json({ message: 'OTP sent successfully' });
+      res.status(200).json({ email });
     } catch (error) {
       next(error);
     }
@@ -202,7 +204,7 @@ class UserController {
       const { email, otp } = req.body;
       const result = await mailService.verifyOtp(email, otp);
       if (result) {
-        const userId = '676bbe1c4b9c1aae71d0cdb6';
+        const userId = req.user._id;
         const user = await userModel.findByIdAndUpdate(
           userId,
           { email },
