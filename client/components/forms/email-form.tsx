@@ -86,7 +86,7 @@ const EmailForm = () => {
       const token = await generateToken(session?.currentUser?._id);
       const { data } = await axiosClient.put<{ email: string; otp: string }>(
         '/api/user/email',
-        { email: emailForm.getValues('email'), otp },
+        { email: otpForm.getValues('email'), otp },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -173,6 +173,7 @@ const EmailForm = () => {
               <Label>One-Time Password</Label>
               <FormControl>
                 <InputOTP
+                  disabled={verifyMutation.isPending}
                   pattern={REGEXP_ONLY_DIGITS}
                   maxLength={6}
                   {...field}
@@ -213,7 +214,11 @@ const EmailForm = () => {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          disabled={verifyMutation.isPending}
+          className="w-full"
+          type="submit"
+        >
           Submit
         </Button>
       </form>
