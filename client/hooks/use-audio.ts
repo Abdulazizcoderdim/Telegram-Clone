@@ -6,8 +6,8 @@ const useAudio = () => {
   const [play3] = useSound('/audio/sending.mp3');
   const [play4] = useSound('/audio/sending2.mp3');
 
-  const playSound = (value: string) => {
-    switch (value) {
+  const playSound = (sound: string) => {
+    switch (sound) {
       case 'notification.mp3':
         play1();
         break;
@@ -21,13 +21,10 @@ const useAudio = () => {
         play4();
         break;
       default:
-        break;
     }
   };
 
-  return {
-    playSound,
-  };
+  return { playSound };
 };
 
 export default useAudio;
