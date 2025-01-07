@@ -46,6 +46,7 @@ const Settings = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const { data: session, update } = useSession();
+  const [open, setOpen] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (muted: boolean) => {
@@ -67,7 +68,7 @@ const Settings = () => {
 
   return (
     <>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button size={'icon'} variant={'secondary'}>
             <Menu className="text-muted-foreground" />
@@ -92,7 +93,10 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer">
+            <div
+              onClick={() => setOpen(false)}
+              className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer"
+            >
               <div className="flex items-center gap-1">
                 <UserPlus size={16} />
                 <span className="text-sm">Create contact</span>
