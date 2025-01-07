@@ -1,5 +1,10 @@
+import { toast } from '@/hooks/use-toast';
+import { axiosClient } from '@/http/axios';
+import { generateToken } from '@/lib/generate-token';
 import { confirmTextSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { signOut, useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '../ui/button';
@@ -27,9 +32,26 @@ const DangerZone = () => {
     resolver: zodResolver(confirmTextSchema),
     defaultValues: { confirmText: '' },
   });
+  const { data: session } = useSession();
 
-  function onSubmit(values: z.infer<typeof confirmTextSchema>) {
-    console.log(values);
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () => {
+      const token = await generateToken(session?.currentUser?._id);
+      const { data } = await axiosClient.delete('/api/user', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      signOut();
+      toast({ description: 'Account deleted successfully' });
+    },
+  });
+
+  function onSubmit() {
+    mutate();
   }
 
   return (
@@ -69,13 +91,19 @@ const DangerZone = () => {
                       confirm.
                     </FormDescription>
                     <FormControl>
-                      <Input className="bg-secondary" {...field} />
+                      <Input
+                        disabled={isPending}
+                        className="bg-secondary"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )}
               />
-              <Button className="w-full font-bold">Submit</Button>
+              <Button disabled={isPending} className="w-full font-bold">
+                Submit
+              </Button>
             </form>
           </Form>
         </DialogContent>
