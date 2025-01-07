@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLoading } from '@/hooks/use-loading';
 import { emailSchema } from '@/lib/validation';
 import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
@@ -20,6 +21,8 @@ interface Props {
 }
 
 const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
+  const { isCreating } = useLoading();
+
   return (
     <div className="h-screen w-full flex z-40 relative">
       <div className="flex justify-center items-center z-50 w-full">
@@ -41,6 +44,7 @@ const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
                     <Label>Email</Label>
                     <FormControl>
                       <Input
+                        disabled={isCreating}
                         placeholder="example@gmail.com"
                         className="h-10 bg-secondary"
                         {...field}
@@ -50,7 +54,12 @@ const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" size={'lg'}>
+              <Button
+                disabled={isCreating}
+                type="submit"
+                className="w-full"
+                size={'lg'}
+              >
                 Submit
               </Button>
             </form>

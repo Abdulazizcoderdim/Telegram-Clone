@@ -1,11 +1,17 @@
 'use client';
 
 import { useCurrentContact } from '@/hooks/use-current';
+import { useLoading } from '@/hooks/use-loading';
+import { toast } from '@/hooks/use-toast';
+import { axiosClient } from '@/http/axios';
+import { generateToken } from '@/lib/generate-token';
 import { emailSchema, messageSchema } from '@/lib/validation';
-import { IUser } from '@/types';
+import { IError, IUser } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import AddContact from './_components/add-contact';
@@ -14,8 +20,11 @@ import ContactList from './_components/contact-list';
 import TopChat from './_components/top-chat';
 
 const HomePage = () => {
+  const [contacts, setContacts] = useState<IUser[]>([]);
+  const { setCreating, setLoading, isLoading } = useLoading();
   const { currentContact } = useCurrentContact();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const contactForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
@@ -32,13 +41,67 @@ const HomePage = () => {
     },
   });
 
+  const getContacts = async () => {
+    setLoading(true);
+    const token = await generateToken(session?.currentUser?._id);
+    console.log(token);
+    try {
+      const { data } = await axiosClient.get<{ contacts: IUser[] }>(
+        '/api/user/contacts',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setContacts(data.contacts);
+    } catch (error) {
+      toast({ description: 'Cannot fetch contacts', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     router.replace('/');
   }, []);
 
-  const onCreateContact = (values: z.infer<typeof emailSchema>) => {
-    // API call
-    console.log(values);
+  useEffect(() => {
+    if (session?.currentUser?._id) getContacts();
+  }, [session?.currentUser]);
+
+  const onCreateContact = async (values: z.infer<typeof emailSchema>) => {
+    setCreating(true);
+    const token = await generateToken(session?.currentUser?._id);
+    try {
+      const { data } = await axiosClient.post<{ contact: IUser }>(
+        '/api/user/contact',
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setContacts(prev => [...prev, data.contact]);
+      toast({
+        description: 'Contact created successfully',
+      });
+      contactForm.reset();
+    } catch (error) {
+      if ((error as IError).response?.data?.message) {
+        return toast({
+          description: (error as IError).response.data.message,
+          variant: 'destructive',
+        });
+      }
+      return toast({
+        description: 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setCreating(false);
+    }
   };
 
   const onSendMessage = (values: z.infer<typeof messageSchema>) => {
@@ -50,12 +113,14 @@ const HomePage = () => {
     <>
       <div className="w-80 h-screen border-r fixed inset-0 z-50">
         {/* Loading */}
-        {/* <div className="w-full h-[95vh] flex justify-center items-center">
-         <Loader2 size={50} className="animate-spin" />
-        </div> */}
+        {isLoading && (
+          <div className="w-full h-[95vh] flex justify-center items-center">
+            <Loader2 size={50} className="animate-spin" />
+          </div>
+        )}
 
         {/* contact-list */}
-        <ContactList contacts={contacts} />
+        {!isLoading && <ContactList contacts={contacts} />}
       </div>
 
       {/* chat area */}
@@ -81,40 +146,5 @@ const HomePage = () => {
     </>
   );
 };
-
-const contacts: IUser[] = [
-  {
-    email: 'johndoeee@example.com',
-    _id: '1',
-    avatar: 'logo.png', // add avatar property
-    firstName: 'John',
-    lastName: 'Jane',
-    bio: 'Hello world',
-  },
-  {
-    email: 'jane@example.com',
-    _id: '2',
-    avatar: 'jane-avatar.jpg', // add avatar property
-    firstName: 'Jane',
-    lastName: 'Doe',
-    bio: 'Hello world',
-  },
-  {
-    email: 'ali@example.com',
-    _id: '3',
-    avatar: 'ali-avatar.jpg', // add avatar property
-    firstName: 'Ali',
-    lastName: 'Ahmed',
-    bio: 'Hello world',
-  },
-  {
-    email: 'bob@example.com',
-    _id: '4',
-    avatar: 'bob-avatar.jpg', // add avatar property
-    firstName: 'Bob',
-    lastName: 'Smith',
-    bio: 'Hello world',
-  },
-];
 
 export default HomePage;

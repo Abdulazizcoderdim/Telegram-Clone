@@ -40,7 +40,7 @@ class UserController {
 
   async getContact(req, res, next) {
     try {
-      const userId = '676bbe1c4b9c1aae71d0cdb6';
+      const userId = req.user._id;
 
       const contacts = await userModel.findById(userId).populate('contacts');
       const allContacts = contacts.contacts.map(contact => contact.toObject());
@@ -90,7 +90,7 @@ class UserController {
   async createContact(req, res, next) {
     try {
       const { email } = req.body;
-      const userId = '676bbe0c4b9c1aae71d0cdb1';
+      const userId = req.user._id;
 
       const user = await userModel.findById(userId);
 
@@ -111,7 +111,7 @@ class UserController {
       await user.save();
       await contact.save();
 
-      res.status(201).json({ message: 'Contact added successfully', contact });
+      res.status(201).json({ contact });
     } catch (error) {
       next(error);
     }

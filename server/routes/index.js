@@ -12,21 +12,29 @@ router.group('/auth', route => {
 });
 
 router.group('/user', route => {
-  route.get('/contacts', userController.getContact);
-  route.get('/messages/:contactId', userController.getMessages);
+  route.get('/contacts', authMiddleware, userController.getContact);
+  route.get('/messages/:contactId', authMiddleware, userController.getMessages);
 
-  route.post('/message-read', userController.readMessage);
-  route.post('/message', userController.createMessage);
-  route.post('/contact', userController.createContact);
-  route.post('/reaction', userController.createReaction);
+  route.post('/message-read', authMiddleware, userController.readMessage);
+  route.post('/message', authMiddleware, userController.createMessage);
+  route.post('/contact', authMiddleware, userController.createContact);
+  route.post('/reaction', authMiddleware, userController.createReaction);
   route.post('/send-otp', authMiddleware, userController.sendOTP);
 
   route.put('/profile', authMiddleware, userController.updateProfile);
-  route.put('/message/:messageId', userController.updateMessage);
+  route.put(
+    '/message/:messageId',
+    authMiddleware,
+    userController.updateMessage
+  );
   route.put('/email', authMiddleware, userController.updateEmail);
 
   route.delete('/', authMiddleware, userController.deleteUser);
-  route.delete('/message/:messageId', userController.deleteMessage);
+  route.delete(
+    '/message/:messageId',
+    authMiddleware,
+    userController.deleteMessage
+  );
 });
 
 module.exports = router;
