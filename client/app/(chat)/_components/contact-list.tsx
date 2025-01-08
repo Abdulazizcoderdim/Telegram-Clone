@@ -6,7 +6,7 @@ import { useCurrentContact } from '@/hooks/use-current';
 import { cn } from '@/lib/utils';
 import { IUser } from '@/types';
 import { useRouter } from 'next/navigation';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Settings from './settings';
 
 type Props = {
@@ -14,8 +14,13 @@ type Props = {
 };
 
 const ContactList: FC<Props> = ({ contacts }) => {
+  const [query, setQuery] = useState('');
   const router = useRouter();
   const { currentContact, setCurrentContact } = useCurrentContact();
+
+  const filteredContacts = contacts.filter(contact => {
+    contact.email.toLowerCase().includes(query.toLowerCase());
+  });
 
   const renderContact = (contact: IUser) => {
     const onChat = () => {
@@ -75,20 +80,26 @@ const ContactList: FC<Props> = ({ contacts }) => {
       <div className="flex items-center bg-background pl-2 sticky top-0">
         <Settings />
         <div className="m-2 w-full">
-          <Input className="bg-secondary" type="text" placeholder="Search..." />
+          <Input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="bg-secondary"
+            type="text"
+            placeholder="Search..."
+          />
         </div>
       </div>
-
-      {/* contacts */}
-      {contacts.length === 0 && (
-        <div className="w-full h-[95vh] text-muted-foreground flex justify-center items-center text-center">
-          <p>No contacts found</p>
-        </div>
-      )}
-
-      {contacts.map(contact => (
-        <div key={contact._id}>{renderContact(contact)}</div>
-      ))}
+      <div className="max-md:mt-2">
+        {filteredContacts.length === 0 ? (
+          <div className="w-full h-[95vh] text-muted-foreground flex justify-center items-center text-center">
+            <p>No contacts found</p>
+          </div>
+        ) : (
+          filteredContacts.map(contact => (
+            <div key={contact._id}>{renderContact(contact)}</div>
+          ))
+        )}
+      </div>
     </>
   );
 };
