@@ -18,9 +18,9 @@ const ContactList: FC<Props> = ({ contacts }) => {
   const router = useRouter();
   const { currentContact, setCurrentContact } = useCurrentContact();
 
-  const filteredContacts = contacts.filter(contact => {
-    contact.email.toLowerCase().includes(query.toLowerCase());
-  });
+  const filteredContacts = contacts.filter(contact =>
+    contact.email.toLowerCase().includes(query.toLowerCase())
+  );
 
   const renderContact = (contact: IUser) => {
     const onChat = () => {

@@ -44,7 +44,7 @@ const HomePage = () => {
   const getContacts = async () => {
     setLoading(true);
     const token = await generateToken(session?.currentUser?._id);
-    console.log(token);
+
     try {
       const { data } = await axiosClient.get<{ contacts: IUser[] }>(
         '/api/user/contacts',
