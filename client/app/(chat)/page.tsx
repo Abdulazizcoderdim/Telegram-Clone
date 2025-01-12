@@ -11,8 +11,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { io } from 'socket.io-client';
 import { z } from 'zod';
 import AddContact from './_components/add-contact';
 import Chat from './_components/chat';
@@ -25,6 +26,8 @@ const HomePage = () => {
   const { currentContact } = useCurrentContact();
   const router = useRouter();
   const { data: session } = useSession();
+
+  const socket = useRef<ReturnType<typeof io> | null>(null);
 
   const contactForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
@@ -64,6 +67,8 @@ const HomePage = () => {
 
   useEffect(() => {
     router.replace('/');
+    socket.current = io('ws://localhost:5000', {});
+    console.log('Socket connected');
   }, []);
 
   useEffect(() => {
