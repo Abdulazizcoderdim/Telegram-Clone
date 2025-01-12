@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -27,7 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { generateToken } from '@/lib/generate-token';
-import { UploadDropzone } from '@/lib/uploadthing';
+import { UploadButton } from '@/lib/uploadthing';
 import { useMutation } from '@tanstack/react-query';
 import {
   LogIn,
@@ -47,18 +47,13 @@ const Settings = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const { data: session, update } = useSession();
-  const [open, setOpen] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (muted: boolean) => {
+    mutationFn: async (payload: IPayload) => {
       const token = await generateToken(session?.currentUser?._id);
-      const { data } = await axiosClient.put(
-        '/api/user/profile',
-        { muted },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const { data } = await axiosClient.put('/api/user/profile', payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return data;
     },
     onSuccess: () => {
@@ -69,24 +64,22 @@ const Settings = () => {
 
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover>
         <PopoverTrigger asChild>
-          <Button size={'icon'} variant={'secondary'}>
-            <Menu className="text-muted-foreground" />
+          <Button size={'icon'} variant={'secondary'} className="max-md:w-full">
+            <Menu />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-80 rounded-none">
+        <PopoverContent className="p-0 w-80">
           <h2 className="pt-2 pl-2 text-muted-foreground text-sm">
             Settings:{' '}
-            <span className="dark:text-white text-black">
-              {session?.currentUser?.email}
-            </span>
+            <span className="text-white">{session?.currentUser?.email}</span>
           </h2>
           <Separator className="my-2" />
           <div className="flex flex-col">
             <div
-              onClick={() => setIsProfileOpen(true)}
               className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer"
+              onClick={() => setIsProfileOpen(true)}
             >
               <div className="flex items-center gap-1">
                 <Settings2 size={16} />
@@ -95,8 +88,8 @@ const Settings = () => {
             </div>
 
             <div
-              onClick={() => setOpen(false)}
               className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer"
+              onClick={() => window.location.reload()}
             >
               <div className="flex items-center gap-1">
                 <UserPlus size={16} />
@@ -104,19 +97,21 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer">
+            <div className="flex justify-between items-center p-2 hover:bg-secondary">
               <div className="flex items-center gap-1">
                 <VolumeOff size={16} />
                 <span className="text-sm">Mute</span>
               </div>
               <Switch
                 checked={!session?.currentUser?.muted}
-                onCheckedChange={() => mutate(!session?.currentUser?.muted)}
+                onCheckedChange={() =>
+                  mutate({ muted: !session?.currentUser?.muted })
+                }
                 disabled={isPending}
               />
             </div>
 
-            <div className="flex justify-between items-center p-2 hover:bg-secondary cursor-pointer">
+            <div className="flex justify-between items-center p-2 hover:bg-secondary">
               <div className="flex items-center gap-1">
                 {resolvedTheme === 'dark' ? (
                   <Sun size={16} />
@@ -124,7 +119,7 @@ const Settings = () => {
                   <Moon size={16} />
                 )}
                 <span className="text-sm">
-                  {resolvedTheme === 'dark' ? 'Light' : 'Dark'}
+                  {resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
                 </span>
               </div>
               <Switch
@@ -136,8 +131,8 @@ const Settings = () => {
             </div>
 
             <div
+              className="flex justify-between items-center bg-destructive p-2 cursor-pointer"
               onClick={() => signOut()}
-              className="flex bg-destructive justify-between items-center p-2 hover:bg-destructive/80 cursor-pointer"
             >
               <div className="flex items-center gap-1">
                 <LogIn size={16} />
@@ -149,35 +144,41 @@ const Settings = () => {
       </Popover>
 
       <Sheet open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-        <SheetContent side={'left'} className="w-80 p-2">
+        <SheetContent side={'left'} className="w-80 p-2 max-md:w-full">
           <SheetHeader>
             <SheetTitle className="text-2xl">My profile</SheetTitle>
             <SheetDescription>
-              Settings up your profile will help you connect with your friends
+              Setting up your profile will help you connect with your friends
               and family easily.
             </SheetDescription>
           </SheetHeader>
 
           <Separator className="my-2" />
 
-          <UploadDropzone
-            endpoint="imageUploader"
-            onClientUploadComplete={res => {
-              console.log(res);
-            }}
-          />
-          <div className="mx-auto w-1/2 h-36 relative">
-            <Avatar className="w-full h-36 ">
+          <div className="mx-auto w-1/2 max-md:w-1/4 h-36 relative">
+            <Avatar className="w-full h-36">
+              <AvatarImage
+                src={session?.currentUser?.avatar}
+                alt={session?.currentUser?.email}
+                className="object-cover"
+              />
               <AvatarFallback className="text-6xl uppercase font-spaceGrotesk">
-                SB
+                {session?.currentUser?.email.charAt(0)}
               </AvatarFallback>
-              <Button
-                size={'icon'}
-                className="absolute right-1/2 -translate-x-1/2 left-1/2 bottom-0"
-              >
-                <Upload size={16} />
-              </Button>
             </Avatar>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={res => {
+                mutate({ avatar: res[0].url });
+              }}
+              config={{ appendOnPaste: true, mode: 'auto' }}
+              className="absolute right-0 bottom-0"
+              appearance={{
+                allowedContent: { display: 'none' },
+                button: { width: 40, height: 40, borderRadius: '100%' },
+              }}
+              content={{ button: <Upload size={16} /> }}
+            />
           </div>
 
           <Accordion type="single" collapsible className="mt-4">
@@ -190,7 +191,7 @@ const Settings = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2">
+            <AccordionItem value="item-2" className="mt-2">
               <AccordionTrigger className="bg-secondary px-2">
                 Email
               </AccordionTrigger>
@@ -199,20 +200,20 @@ const Settings = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3">
+            <AccordionItem value="item-3" className="mt-2">
               <AccordionTrigger className="bg-secondary px-2">
                 Notification
               </AccordionTrigger>
-              <AccordionContent className="px-2 mt-2">
+              <AccordionContent className="mt-2">
                 <NotificationForm />
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4">
+            <AccordionItem value="item-4" className="mt-2">
               <AccordionTrigger className="bg-secondary px-2">
                 Danger zone
               </AccordionTrigger>
-              <AccordionContent className="px-2 mt-2">
+              <AccordionContent className="my-2 px-2">
                 <DangerZone />
               </AccordionContent>
             </AccordionItem>
@@ -224,3 +225,8 @@ const Settings = () => {
 };
 
 export default Settings;
+
+interface IPayload {
+  muted?: boolean;
+  avatar?: string;
+}

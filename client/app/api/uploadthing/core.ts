@@ -12,11 +12,9 @@ export const ourFileRouter = {
       if (!token) throw new UploadThingError('Unauthorized');
       return { token };
     })
+    // @ts-ignore
     .onUploadComplete(async ({ file }) => {
-      return {
-        name: file.name,
-        url: file.url,
-      };
+      return file;
     }),
 } satisfies FileRouter;
 
