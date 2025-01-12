@@ -27,6 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { generateToken } from '@/lib/generate-token';
+import { UploadDropzone } from '@/lib/uploadthing';
 import { useMutation } from '@tanstack/react-query';
 import {
   LogIn,
@@ -159,6 +160,12 @@ const Settings = () => {
 
           <Separator className="my-2" />
 
+          <UploadDropzone
+            endpoint="imageUploader"
+            onClientUploadComplete={res => {
+              console.log(res);
+            }}
+          />
           <div className="mx-auto w-1/2 h-36 relative">
             <Avatar className="w-full h-36 ">
               <AvatarFallback className="text-6xl uppercase font-spaceGrotesk">
