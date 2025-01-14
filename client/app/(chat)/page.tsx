@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/hooks/use-auth';
 import { useCurrentContact } from '@/hooks/use-current';
 import { useLoading } from '@/hooks/use-loading';
 import { toast } from '@/hooks/use-toast';
@@ -26,6 +27,7 @@ const HomePage = () => {
   const { currentContact } = useCurrentContact();
   const router = useRouter();
   const { data: session } = useSession();
+  const { setOnlineUsers } = useAuth();
 
   const socket = useRef<ReturnType<typeof io> | null>(null);
 
@@ -74,6 +76,12 @@ const HomePage = () => {
   useEffect(() => {
     if (session?.currentUser?._id) {
       socket.current?.emit('addOnlineUser', session?.currentUser);
+      socket.current?.on(
+        'getOnlineUsers',
+        (data: { socketId: string; user: IUser }[]) => {
+          setOnlineUsers(data.map(item => item.user));
+        }
+      );
       getContacts();
     }
   }, [session?.currentUser]);

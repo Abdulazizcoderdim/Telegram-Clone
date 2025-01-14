@@ -73,7 +73,9 @@ const Settings = () => {
         <PopoverContent className="p-0 w-80">
           <h2 className="pt-2 pl-2 text-muted-foreground text-sm">
             Settings:{' '}
-            <span className="text-white">{session?.currentUser?.email}</span>
+            <span className="dark:text-white text-black">
+              {session?.currentUser?.email}
+            </span>
           </h2>
           <Separator className="my-2" />
           <div className="flex flex-col">

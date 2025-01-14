@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/use-auth';
 import { useCurrentContact } from '@/hooks/use-current';
 import { cn } from '@/lib/utils';
 import { IUser } from '@/types';
@@ -17,10 +18,13 @@ const ContactList: FC<Props> = ({ contacts }) => {
   const [query, setQuery] = useState('');
   const router = useRouter();
   const { currentContact, setCurrentContact } = useCurrentContact();
+  const { onlineUsers } = useAuth();
 
   const filteredContacts = contacts.filter(contact =>
     contact.email.toLowerCase().includes(query.toLowerCase())
   );
+
+  console.log(onlineUsers);
 
   const renderContact = (contact: IUser) => {
     const onChat = () => {
@@ -52,7 +56,9 @@ const ContactList: FC<Props> = ({ contacts }) => {
                 {contact.email[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="size-3 bg-green-500 absolute rounded-full bottom-0 right-0 !z-50" />
+            {onlineUsers.some(user => user._id === contact._id) && (
+              <div className="size-3 bg-green-500 absolute rounded-full bottom-0 right-0 !z-50" />
+            )}
           </div>
 
           <div>
