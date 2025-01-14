@@ -72,7 +72,10 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    if (session?.currentUser?._id) getContacts();
+    if (session?.currentUser?._id) {
+      socket.current?.emit('addOnlineUser', session?.currentUser);
+      getContacts();
+    }
   }, [session?.currentUser]);
 
   const onCreateContact = async (values: z.infer<typeof emailSchema>) => {
