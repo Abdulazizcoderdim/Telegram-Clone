@@ -1,3 +1,5 @@
+import MessageCard from '@/components/cards/message-card';
+import ChatLoading from '@/components/loadings/chat.loading';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -6,7 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useLoading } from '@/hooks/use-loading';
 import { messageSchema } from '@/lib/validation';
+import { IMessage } from '@/types';
 import emojies from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { Paperclip, Send, Smile } from 'lucide-react';
@@ -18,9 +22,11 @@ import { z } from 'zod';
 interface Props {
   onSendMessage: (values: z.infer<typeof messageSchema>) => void;
   messageForm: UseFormReturn<z.infer<typeof messageSchema>>;
+  messages: IMessage[];
 }
 
-const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
+const Chat: React.FC<Props> = ({ onSendMessage, messageForm, messages }) => {
+  const { loadMessages } = useLoading();
   const { resolvedTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -45,19 +51,23 @@ const Chat: React.FC<Props> = ({ onSendMessage, messageForm }) => {
   return (
     <div className="flex flex-col justify-end z-40 min-h-[92vh]">
       {/* Loading */}
-      {/* <ChatLoading /> */}
+      {loadMessages && <ChatLoading />}
       {/* Messages */}
-      {/* <MessageCard isReceived /> */}
+      {messages.map((message, index) => (
+        <MessageCard key={index} message={message} />
+      ))}
 
       {/* Start conversation */}
-      {/* <div className="w-full h-[88vh] flex items-center justify-center">
-        <div
-          onClick={() => onSendMessage({ text: '👋' })}
-          className="text-[100px] cursor-pointer select-none"
-        >
-          👋
+      {messages.length === 0 && (
+        <div className="w-full h-[88vh] flex items-center justify-center">
+          <div
+            onClick={() => onSendMessage({ text: '👋' })}
+            className="text-[100px] cursor-pointer select-none"
+          >
+            👋
+          </div>
         </div>
-      </div> */}
+      )}
 
       {/* Input */}
       <Form {...messageForm}>

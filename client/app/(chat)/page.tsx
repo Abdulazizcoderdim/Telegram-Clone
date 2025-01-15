@@ -7,7 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
 import { generateToken } from '@/lib/generate-token';
 import { emailSchema, messageSchema } from '@/lib/validation';
-import { IError, IUser } from '@/types';
+import { IError, IMessage, IUser } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -23,7 +23,8 @@ import TopChat from './_components/top-chat';
 
 const HomePage = () => {
   const [contacts, setContacts] = useState<IUser[]>([]);
-  const { setCreating, setLoading, isLoading } = useLoading();
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const { setCreating, setLoading, isLoading, setLoadMessages } = useLoading();
   const { currentContact } = useCurrentContact();
   const router = useRouter();
   const { data: session } = useSession();
@@ -67,6 +68,26 @@ const HomePage = () => {
     }
   };
 
+  const getMessages = async () => {
+    setLoadMessages(true);
+    const token = await generateToken(session?.currentUser?._id);
+    try {
+      const { data } = await axiosClient.get<{ messages: IMessage[] }>(
+        `/api/user/messages/${currentContact?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessages(data?.messages);
+    } catch {
+      toast({ description: 'Cannot fetch messages', variant: 'destructive' });
+    } finally {
+      setLoadMessages(false);
+    }
+  };
+
   useEffect(() => {
     router.replace('/');
     socket.current = io('ws://localhost:5000', {});
@@ -96,6 +117,12 @@ const HomePage = () => {
       });
     }
   }, [session?.currentUser, socket]);
+
+  useEffect(() => {
+    if (currentContact?._id) {
+      getMessages();
+    }
+  }, [currentContact]);
 
   const onCreateContact = async (values: z.infer<typeof emailSchema>) => {
     setCreating(true);
@@ -135,9 +162,29 @@ const HomePage = () => {
     }
   };
 
-  const onSendMessage = (values: z.infer<typeof messageSchema>) => {
-    // API call
-    console.log(values);
+  const onSendMessage = async (values: z.infer<typeof messageSchema>) => {
+    setCreating(true);
+    const token = await generateToken(session?.currentUser?._id);
+    try {
+      const { data } = await axiosClient.post<{ newMessage: IMessage }>(
+        '/api/user/message',
+        {
+          ...values,
+          receiver: currentContact?._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessages(prev => [...prev, data.newMessage]);
+      messageForm.reset();
+    } catch {
+      toast({ description: 'Cannot send message', variant: 'destructive' });
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -170,7 +217,11 @@ const HomePage = () => {
             {/* top chat */}
             <TopChat />
             {/* chat messages */}
-            <Chat messageForm={messageForm} onSendMessage={onSendMessage} />
+            <Chat
+              messages={messages}
+              messageForm={messageForm}
+              onSendMessage={onSendMessage}
+            />
           </div>
         )}
       </div>

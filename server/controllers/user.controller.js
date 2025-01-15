@@ -8,7 +8,7 @@ class UserController {
   // [GET]
   async getMessages(req, res, next) {
     try {
-      const user = '676bbe1c4b9c1aae71d0cdb6';
+      const user = req.user._id;
       const { contactId } = req.params;
 
       const messages = await messageModel
@@ -69,7 +69,11 @@ class UserController {
   // [POST]
   async createMessage(req, res, next) {
     try {
-      const newMessage = await messageModel.create(req.body);
+      const userId = req.user._id;
+      const newMessage = await messageModel.create({
+        ...req.body,
+        sender: userId,
+      });
       const currentMessage = await messageModel
         .findById(newMessage._id)
         .populate({

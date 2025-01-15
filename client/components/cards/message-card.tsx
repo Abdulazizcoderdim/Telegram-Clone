@@ -1,25 +1,32 @@
+import { useCurrentContact } from '@/hooks/use-current';
 import { cn } from '@/lib/utils';
+import { IMessage } from '@/types';
 import { FC } from 'react';
 
 interface Props {
-  isReceived?: boolean;
+  message: IMessage;
 }
 
-const MessageCard: FC<Props> = ({ isReceived }) => {
+const MessageCard: FC<Props> = ({ message }) => {
+  const { currentContact } = useCurrentContact();
   return (
     <div
       className={cn(
         'm-2.5 font-medium text-xs flex',
-        isReceived ? 'justify-start' : 'justify-end'
+        message.receiver._id === currentContact?._id
+          ? 'justify-start'
+          : 'justify-end'
       )}
     >
       <div
         className={cn(
           'relative rounded-md inline p-2 pl-2.5 max-w-full pr-12',
-          isReceived ? 'bg-primary' : 'bg-secondary'
+          message.receiver._id === currentContact?._id
+            ? 'bg-primary'
+            : 'bg-secondary'
         )}
       >
-        <p className="text-sm text-white">Hello world</p>
+        <p className="text-sm text-white">{message.text}</p>
         <span className="absolute text-xs right-1 bottom-0 opacity-60">✔</span>
       </div>
     </div>
