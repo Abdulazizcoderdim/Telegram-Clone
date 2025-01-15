@@ -115,6 +115,10 @@ const HomePage = () => {
           return isExist ? prev : [...prev, user];
         });
       });
+
+      socket.current?.on('getNewMessage', data => {
+        console.log(data);
+      });
     }
   }, [session?.currentUser, socket]);
 
@@ -180,6 +184,11 @@ const HomePage = () => {
       );
       setMessages(prev => [...prev, data.newMessage]);
       messageForm.reset();
+      socket.current?.emit('sendMessage', {
+        newMessage: data.newMessage,
+        receiver: currentContact,
+        sender: session?.currentUser,
+      });
     } catch {
       toast({ description: 'Cannot send message', variant: 'destructive' });
     } finally {
