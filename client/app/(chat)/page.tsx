@@ -1,5 +1,6 @@
 'use client';
 
+import useAudio from '@/hooks/use-audio';
 import { useAuth } from '@/hooks/use-auth';
 import { useCurrentContact } from '@/hooks/use-current';
 import { useLoading } from '@/hooks/use-loading';
@@ -29,6 +30,7 @@ const HomePage = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const { setOnlineUsers } = useAuth();
+  const { playSound } = useAudio();
 
   const socket = useRef<ReturnType<typeof io> | null>(null);
 
@@ -129,6 +131,9 @@ const HomePage = () => {
               .split('@')[0]
               .toUpperCase()}`,
           });
+          if (!receiver.muted) {
+            playSound(receiver.notificationSound);
+          }
         }
       );
     }
@@ -182,7 +187,7 @@ const HomePage = () => {
     setCreating(true);
     const token = await generateToken(session?.currentUser?._id);
     try {
-      const { data } = await axiosClient.post<{ newMessage: IMessage }>(
+      const { data } = await axiosClient.post<GetSocketType>(
         '/api/user/message',
         {
           ...values,
@@ -198,8 +203,8 @@ const HomePage = () => {
       messageForm.reset();
       socket.current?.emit('sendMessage', {
         newMessage: data.newMessage,
-        receiver: currentContact,
-        sender: session?.currentUser,
+        receiver: data.receiver,
+        sender: data.sender,
       });
     } catch {
       toast({ description: 'Cannot send message', variant: 'destructive' });

@@ -24,8 +24,6 @@ const ContactList: FC<Props> = ({ contacts }) => {
     contact.email.toLowerCase().includes(query.toLowerCase())
   );
 
-  console.log(onlineUsers);
-
   const renderContact = (contact: IUser) => {
     const onChat = () => {
       if (currentContact?._id === contact._id) return;
