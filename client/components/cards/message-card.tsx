@@ -9,6 +9,9 @@ interface Props {
 
 const MessageCard: FC<Props> = ({ message }) => {
   const { currentContact } = useCurrentContact();
+
+  console.log(currentContact);
+
   return (
     <div
       className={cn(
