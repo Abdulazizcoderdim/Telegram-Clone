@@ -20,13 +20,13 @@ const MessageCard: FC<Props> = ({ message }) => {
     >
       <div
         className={cn(
-          'relative rounded-md inline p-2 pl-2.5 max-w-full pr-12',
+          'relative dark:text-white text-black rounded-md inline p-2 pl-2.5 max-w-full pr-12',
           message.receiver._id === currentContact?._id
-            ? 'bg-primary'
+            ? 'bg-primary text-white'
             : 'bg-secondary'
         )}
       >
-        <p className="text-sm text-white">{message.text}</p>
+        <p className="text-sm">{message.text}</p>
         <span className="absolute text-xs right-1 bottom-0 opacity-60">✔</span>
       </div>
     </div>

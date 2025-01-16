@@ -116,9 +116,15 @@ const HomePage = () => {
         });
       });
 
-      socket.current?.on('getNewMessage', data => {
-        console.log(data);
-      });
+      socket.current?.on(
+        'getNewMessage',
+        ({ newMessage, receiver, sender }: GetSocketType) => {
+          setMessages(prev => {
+            const isExist = prev.some(item => item._id === newMessage._id);
+            return isExist ? prev : [...prev, newMessage];
+          });
+        }
+      );
     }
   }, [session?.currentUser, socket]);
 
@@ -239,3 +245,9 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+interface GetSocketType {
+  receiver: IUser;
+  sender: IUser;
+  newMessage: IMessage;
+}
