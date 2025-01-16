@@ -123,6 +123,12 @@ const HomePage = () => {
             const isExist = prev.some(item => item._id === newMessage._id);
             return isExist ? prev : [...prev, newMessage];
           });
+          toast({
+            title: 'New message',
+            description: `You have a new message from ${receiver.email
+              .split('@')[0]
+              .toUpperCase()}`,
+          });
         }
       );
     }
