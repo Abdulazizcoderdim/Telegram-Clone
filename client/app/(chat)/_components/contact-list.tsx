@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCurrentContact } from '@/hooks/use-current';
 import { cn, sliceText } from '@/lib/utils';
 import { IUser } from '@/types';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import Settings from './settings';
@@ -73,9 +74,13 @@ const ContactList: FC<Props> = ({ contacts }) => {
           </div>
         </div>
 
-        <div className="self-end">
-          <p className="text-xs text-muted-foreground">19:20 pm</p>
-        </div>
+        {contact.lastMessage && (
+          <div className="self-end">
+            <p className="text-xs text-muted-foreground">
+              {format(contact.lastMessage.updatedAt, 'hh:mm a')}
+            </p>
+          </div>
+        )}
       </div>
     );
   };

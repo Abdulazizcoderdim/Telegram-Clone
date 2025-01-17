@@ -125,6 +125,13 @@ const HomePage = () => {
             const isExist = prev.some(item => item._id === newMessage._id);
             return isExist ? prev : [...prev, newMessage];
           });
+          setContacts(prev =>
+            prev.map(item =>
+              item._id === sender._id
+                ? { ...item, lastMessage: newMessage }
+                : item
+            )
+          );
           toast({
             title: 'New message',
             description: `You have a new message from ${receiver.email
@@ -200,6 +207,13 @@ const HomePage = () => {
         }
       );
       setMessages(prev => [...prev, data.newMessage]);
+      setContacts(prev =>
+        prev.map(item =>
+          item._id === currentContact?._id
+            ? { ...item, lastMessage: data.newMessage }
+            : item
+        )
+      );
       messageForm.reset();
       socket.current?.emit('sendMessage', {
         newMessage: data.newMessage,
@@ -212,6 +226,8 @@ const HomePage = () => {
       setCreating(false);
     }
   };
+
+  
 
   return (
     <>
