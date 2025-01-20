@@ -6,6 +6,7 @@ import { useCurrentContact } from '@/hooks/use-current';
 import { useLoading } from '@/hooks/use-loading';
 import { toast } from '@/hooks/use-toast';
 import { axiosClient } from '@/http/axios';
+import { CONST } from '@/lib/constants';
 import { generateToken } from '@/lib/generate-token';
 import { emailSchema, messageSchema } from '@/lib/validation';
 import { IError, IMessage, IUser } from '@/types';
@@ -64,6 +65,7 @@ const HomePage = () => {
       );
       setContacts(data.contacts);
     } catch (error) {
+      console.error(error);
       toast({ description: 'Cannot fetch contacts', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -227,7 +229,26 @@ const HomePage = () => {
     }
   };
 
-  
+  const onReadMessages = async () => {
+    const receivedMessages = messages
+      .filter(message => message.receiver._id === session?.currentUser?._id)
+      .filter(message => message.status !== CONST.READ);
+
+    if (receivedMessages.length === 0) return;
+
+    const token = await generateToken(session?.currentUser?._id);
+    try {
+      const { data } = await axiosClient.post<{ allMessages: IMessage[] }>(
+        '/api/user/message-read',
+        {
+          messages: receivedMessages,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch {
+      toast({ description: 'Cannot read messages', variant: 'destructive' });
+    }
+  };
 
   return (
     <>
