@@ -15,20 +15,30 @@ import emojies from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { Paperclip, Send, Smile } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
 interface Props {
-  onSendMessage: (values: z.infer<typeof messageSchema>) => void;
+  onSendMessage: (values: z.infer<typeof messageSchema>) => Promise<void>;
   messageForm: UseFormReturn<z.infer<typeof messageSchema>>;
   messages: IMessage[];
+  onReadMessages: () => Promise<void>;
 }
 
-const Chat: React.FC<Props> = ({ onSendMessage, messageForm, messages }) => {
+const Chat: React.FC<Props> = ({
+  onSendMessage,
+  onReadMessages,
+  messageForm,
+  messages,
+}) => {
   const { loadMessages } = useLoading();
   const { resolvedTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    onReadMessages();
+  }, [messages]);
 
   const handleEmojiSelect = (emoji: string) => {
     const input = inputRef.current;

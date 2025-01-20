@@ -32,9 +32,9 @@ const MessageCard: FC<Props> = ({ message }) => {
             : 'bg-secondary'
         )}
       >
-        <p className="text-sm">{message.text}</p>
+        <p className="text-sm font-sans">{message.text}</p>
         <div className="right-1 bottom-0 opacity-60 absolute text-[9px] flex gap-[3px]">
-          <p>{format(message.updatedAt, 'hh:mm')}</p>
+          <p className='font-sans'>{format(message.updatedAt, 'hh:mm')}</p>
           <div className="self-end">
             {message.receiver._id === currentContact?._id &&
               (message.status === CONST.READ ? (

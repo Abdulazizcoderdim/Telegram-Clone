@@ -134,17 +134,26 @@ const HomePage = () => {
                 : item
             )
           );
-          toast({
-            title: 'New message',
-            description: `You have a new message from ${receiver.email
-              .split('@')[0]
-              .toUpperCase()}`,
-          });
+          // toast({
+          //   title: 'New message',
+          //   description: `You have a new message from ${receiver.email
+          //     .split('@')[0]
+          //     .toUpperCase()}`,
+          // });
           if (!receiver.muted) {
             playSound(receiver.notificationSound);
           }
         }
       );
+
+      socket.current?.on('getReadMessages', (messages: IMessage[]) => {
+        setMessages(prev => {
+          return prev.map(item => {
+            const message = messages.find(msg => msg._id === item._id);
+            return message ? { ...item, status: CONST.READ } : item;
+          });
+        });
+      });
     }
   }, [session?.currentUser, socket]);
 
@@ -238,13 +247,23 @@ const HomePage = () => {
 
     const token = await generateToken(session?.currentUser?._id);
     try {
-      const { data } = await axiosClient.post<{ allMessages: IMessage[] }>(
+      const { data } = await axiosClient.post<{ messages: IMessage[] }>(
         '/api/user/message-read',
         {
           messages: receivedMessages,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      socket.current?.emit('readMessages', {
+        receiver: currentContact,
+        messages: data.messages,
+      });
+      setMessages(prev => {
+        return prev.map(item => {
+          const message = data.messages.find(msg => msg._id === item._id);
+          return message ? { ...item, status: CONST.READ } : item;
+        });
+      });
     } catch {
       toast({ description: 'Cannot read messages', variant: 'destructive' });
     }
@@ -281,6 +300,7 @@ const HomePage = () => {
             <TopChat />
             {/* chat messages */}
             <Chat
+              onReadMessages={onReadMessages}
               messages={messages}
               messageForm={messageForm}
               onSendMessage={onSendMessage}
