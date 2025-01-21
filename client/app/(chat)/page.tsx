@@ -127,6 +127,13 @@ const HomePage = () => {
             const isExist = prev.some(item => item._id === newMessage._id);
             return isExist ? prev : [...prev, newMessage];
           });
+          setContacts(prev => {
+            return prev.map(item =>
+              item._id === sender._id
+                ? { ...item, lastMessage: { ...newMessage, status: CONST } }
+                : item
+            );
+          });
           setContacts(prev =>
             prev.map(item =>
               item._id === sender._id
@@ -221,7 +228,10 @@ const HomePage = () => {
       setContacts(prev =>
         prev.map(item =>
           item._id === currentContact?._id
-            ? { ...item, lastMessage: data.newMessage }
+            ? {
+                ...item,
+                lastMessage: { ...data.newMessage, status: CONST.READ },
+              }
             : item
         )
       );

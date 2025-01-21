@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/use-auth';
 import { useCurrentContact } from '@/hooks/use-current';
+import { CONST } from '@/lib/constants';
 import { cn, sliceText } from '@/lib/utils';
 import { IUser } from '@/types';
 import { format } from 'date-fns';
@@ -66,7 +67,16 @@ const ContactList: FC<Props> = ({ contacts }) => {
                 ? contact.email.split('@')[0].slice(0, 15) + '...'
                 : contact.email.split('@')[0]}
             </h2>
-            <p className="text-xs line-clamp-1 text-muted-foreground">
+            <p
+              className={cn(
+                'text-xs line-clamp-1',
+                contact.lastMessage
+                  ? contact.lastMessage.status !== CONST.READ
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                  : 'text-muted-foreground'
+              )}
+            >
               {contact.lastMessage
                 ? sliceText(contact.lastMessage.text, 20)
                 : 'No messages yet'}
