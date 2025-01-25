@@ -13,7 +13,7 @@ import { IError, IMessage, IUser } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { io } from 'socket.io-client';
@@ -32,6 +32,10 @@ const HomePage = () => {
   const { data: session } = useSession();
   const { setOnlineUsers } = useAuth();
   const { playSound } = useAudio();
+
+  const searchParams = useSearchParams();
+
+  const CONTACT_ID = searchParams.get('chat');
 
   const socket = useRef<ReturnType<typeof io> | null>(null);
 
@@ -127,13 +131,7 @@ const HomePage = () => {
             const isExist = prev.some(item => item._id === newMessage._id);
             return isExist ? prev : [...prev, newMessage];
           });
-          setContacts(prev => {
-            return prev.map(item =>
-              item._id === sender._id
-                ? { ...item, lastMessage: { ...newMessage, status: CONST } }
-                : item
-            );
-          });
+
           setContacts(prev =>
             prev.map(item =>
               item._id === sender._id
@@ -162,7 +160,7 @@ const HomePage = () => {
         });
       });
     }
-  }, [session?.currentUser, socket]);
+  }, [session?.currentUser, socket, CONTACT_ID]);
 
   useEffect(() => {
     if (currentContact?._id) {
@@ -254,19 +252,16 @@ const HomePage = () => {
       .filter(message => message.status !== CONST.READ);
 
     if (receivedMessages.length === 0) return;
-
     const token = await generateToken(session?.currentUser?._id);
     try {
       const { data } = await axiosClient.post<{ messages: IMessage[] }>(
         '/api/user/message-read',
-        {
-          messages: receivedMessages,
-        },
+        { messages: receivedMessages },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       socket.current?.emit('readMessages', {
-        receiver: currentContact,
         messages: data.messages,
+        receiver: currentContact,
       });
       setMessages(prev => {
         return prev.map(item => {
