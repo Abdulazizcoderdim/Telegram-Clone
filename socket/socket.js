@@ -37,11 +37,9 @@ io.on('connection', socket => {
   socket.on('sendMessage', ({ newMessage, receiver, sender }) => {
     const receiverSocketId = getSocketId(receiver._id);
     if (receiverSocketId) {
-      socket.to(receiverSocketId).emit('getNewMessage', {
-        newMessage,
-        sender,
-        receiver,
-      });
+      socket
+        .to(receiverSocketId)
+        .emit('getNewMessage', { newMessage, sender, receiver });
     }
   });
 

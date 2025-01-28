@@ -35,8 +35,10 @@ const Chat: React.FC<Props> = ({
   const { loadMessages } = useLoading();
   const { resolvedTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const scrollRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     onReadMessages();
   }, [messages]);
 
@@ -84,6 +86,7 @@ const Chat: React.FC<Props> = ({
         <form
           onSubmit={messageForm.handleSubmit(onSendMessage)}
           className="w-full flex relative"
+          ref={scrollRef}
         >
           <Button
             size={'icon'}

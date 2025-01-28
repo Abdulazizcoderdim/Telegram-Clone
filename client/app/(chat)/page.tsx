@@ -83,12 +83,22 @@ const HomePage = () => {
       const { data } = await axiosClient.get<{ messages: IMessage[] }>(
         `/api/user/messages/${currentContact?._id}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setMessages(data?.messages);
+      setMessages(data.messages);
+      setContacts(prev =>
+        prev.map(item =>
+          item._id === currentContact?._id
+            ? {
+                ...item,
+                lastMessage: item.lastMessage
+                  ? { ...item.lastMessage, status: CONST.READ }
+                  : null,
+              }
+            : item
+        )
+      );
     } catch {
       toast({ description: 'Cannot fetch messages', variant: 'destructive' });
     } finally {
@@ -99,7 +109,6 @@ const HomePage = () => {
   useEffect(() => {
     router.replace('/');
     socket.current = io('ws://localhost:5000', {});
-    console.log('Socket connected');
   }, []);
 
   useEffect(() => {
@@ -132,13 +141,23 @@ const HomePage = () => {
             return isExist ? prev : [...prev, newMessage];
           });
 
-          setContacts(prev =>
-            prev.map(item =>
-              item._id === sender._id
-                ? { ...item, lastMessage: newMessage }
-                : item
-            )
-          );
+          setContacts(prev => {
+            return prev.map(contact => {
+              if (contact._id === sender._id) {
+                return {
+                  ...contact,
+                  lastMessage: {
+                    ...newMessage,
+                    status:
+                      CONTACT_ID === sender._id
+                        ? CONST.READ
+                        : newMessage.status,
+                  },
+                };
+              }
+              return contact;
+            });
+          });
           // toast({
           //   title: 'New message',
           //   description: `You have a new message from ${receiver.email
