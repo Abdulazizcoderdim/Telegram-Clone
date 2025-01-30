@@ -19,8 +19,6 @@ interface Props {
 const MessageCard: FC<Props> = ({ message }) => {
   const { currentContact } = useCurrentContact();
 
-  console.log(currentContact);
-
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
