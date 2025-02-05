@@ -2,6 +2,7 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { useCurrentContact } from '@/hooks/use-current';
@@ -9,7 +10,7 @@ import { CONST } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { IMessage } from '@/types';
 import { format } from 'date-fns';
-import { Check, CheckCheck } from 'lucide-react';
+import { Check, CheckCheck, Edit2, Trash } from 'lucide-react';
 import { FC } from 'react';
 
 interface Props {
@@ -18,6 +19,8 @@ interface Props {
 
 const MessageCard: FC<Props> = ({ message }) => {
   const { currentContact } = useCurrentContact();
+
+  const reactions = ['👍', '👎', '😂', '😱', '😭', '😡'];
 
   return (
     <ContextMenu>
@@ -53,11 +56,33 @@ const MessageCard: FC<Props> = ({ message }) => {
           </div>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem>Profile</ContextMenuItem>
-        <ContextMenuItem>Billing</ContextMenuItem>
-        <ContextMenuItem>Team</ContextMenuItem>
-        <ContextMenuItem>Subscription</ContextMenuItem>
+      <ContextMenuContent className="w-56 p-0 mb-10">
+        <ContextMenuItem className="grid grid-cols-6">
+          {reactions.map((reaction, index) => (
+            <div
+              className={cn(
+                'text-xl cursor-pointer p-1 hover:bg-primary/50 rounded-md transition-all',
+                message.reaction === reaction && 'bg-primary/50'
+              )}
+              key={index}
+            >
+              {reaction}
+            </div>
+          ))}
+        </ContextMenuItem>
+        {message.sender._id !== currentContact?._id && (
+          <>
+            <ContextMenuSeparator />
+            <ContextMenuItem className="cursor-pointer">
+              <Edit2 size={14} className="mr-2" />
+              <span>Edit</span>
+            </ContextMenuItem>
+            <ContextMenuItem className="cursor-pointer">
+              <Trash size={14} className="mr-2" />
+              <span>Delete</span>
+            </ContextMenuItem>
+          </>
+        )}
       </ContextMenuContent>
     </ContextMenu>
   );

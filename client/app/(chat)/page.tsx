@@ -293,6 +293,10 @@ const HomePage = () => {
     }
   };
 
+  const onReaction = async (reaction: string) => {
+    
+  };
+
   return (
     <>
       <div className="w-80 h-screen border-r fixed inset-0 z-50">
