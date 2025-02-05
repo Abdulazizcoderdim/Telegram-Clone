@@ -15,6 +15,7 @@ app.use(cors());
 // Routes
 app.use('/api', require('./routes/index'));
 
+
 app.use(errorMiddleware);
 
 const bootstrap = async () => {
