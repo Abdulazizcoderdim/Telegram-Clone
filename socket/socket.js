@@ -5,6 +5,11 @@ const io = require('socket.io')(5000, {
   },
 });
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 785cd3325efc713c2a60ae281e53768b1555123f
 let users = [];
 
 const addOnlineUser = (user, socketId) => {
