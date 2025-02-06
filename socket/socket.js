@@ -5,7 +5,6 @@ const io = require('socket.io')(5000, {
   },
 });
 
-
 let users = [];
 
 const addOnlineUser = (user, socketId) => {
@@ -50,6 +49,13 @@ io.on('connection', socket => {
       socket.to(receiverSocketId).emit('getReadMessages', messages);
     }
   });
+
+  socket.on('updateMessage', ({ updateMessage, receiver, sender }) => {
+    const receiverSocketId = getSocketId(receiver._id);
+    if(receiverSocketId){
+      socket.to(receiverSocketId).emit('getUpdatedMessage', { updateMessage, sender, receiver });
+    }
+  })
 
   socket.on('disconnect', () => {
     users = users.filter(u => u.socketId !== socket.id);

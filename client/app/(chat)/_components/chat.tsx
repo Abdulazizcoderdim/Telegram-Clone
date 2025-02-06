@@ -24,6 +24,7 @@ interface Props {
   messageForm: UseFormReturn<z.infer<typeof messageSchema>>;
   messages: IMessage[];
   onReadMessages: () => Promise<void>;
+  onReaction: (reaction: string, messageId: string) => Promise<void>;
 }
 
 const Chat: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const Chat: React.FC<Props> = ({
   onReadMessages,
   messageForm,
   messages,
+  onReaction,
 }) => {
   const { loadMessages } = useLoading();
   const { resolvedTheme } = useTheme();
@@ -66,7 +68,7 @@ const Chat: React.FC<Props> = ({
       {loadMessages && <ChatLoading />}
       {/* Messages */}
       {messages.map((message, index) => (
-        <MessageCard key={index} message={message} />
+        <MessageCard onReaction={onReaction} key={index} message={message} />
       ))}
 
       {/* Start conversation */}

@@ -178,6 +178,19 @@ const HomePage = () => {
           });
         });
       });
+
+      socket.current?.on(
+        'getUpdatedMessage',
+        ({ updateMessage, receiver, sender }) => {
+          setMessages(prev =>
+            prev.map(item =>
+              item._id === updateMessage._id
+                ? { ...item, reaction: updateMessage.reaction }
+                : item
+            )
+          );
+        }
+      );
     }
   }, [session?.currentUser, socket, CONTACT_ID]);
 
@@ -293,8 +306,30 @@ const HomePage = () => {
     }
   };
 
-  const onReaction = async (reaction: string) => {
-    
+  const onReaction = async (reaction: string, messageId: string) => {
+    const token = await generateToken(session?.currentUser?._id);
+
+    try {
+      const { data } = await axiosClient.post<{ updatedMessage: IMessage }>(
+        `/api/user/reaction`,
+        { reaction, messageId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessages(prev =>
+        prev.map(item =>
+          item._id === data.updatedMessage._id
+            ? { ...item, reaction: data.updatedMessage.reaction }
+            : item
+        )
+      );
+      socket.current?.emit('updateMessage', {
+        updateMessage: data.updatedMessage,
+        receiver: currentContact,
+        sender: session?.currentUser,
+      });
+    } catch {
+      toast({ description: 'Cannot react to message', variant: 'destructive' });
+    }
   };
 
   return (
@@ -328,6 +363,7 @@ const HomePage = () => {
             <TopChat />
             {/* chat messages */}
             <Chat
+              onReaction={onReaction}
               onReadMessages={onReadMessages}
               messages={messages}
               messageForm={messageForm}

@@ -15,9 +15,10 @@ import { FC } from 'react';
 
 interface Props {
   message: IMessage;
+  onReaction: (reaction: string, messageId: string) => Promise<void>;
 }
 
-const MessageCard: FC<Props> = ({ message }) => {
+const MessageCard: FC<Props> = ({ message, onReaction }) => {
   const { currentContact } = useCurrentContact();
 
   const reactions = ['👍', '👎', '😂', '😱', '😭', '😡'];
@@ -53,6 +54,10 @@ const MessageCard: FC<Props> = ({ message }) => {
                   ))}
               </div>
             </div>
+
+            <span className="absolute -right-2 -bottom-2">
+              {message.reaction}
+            </span>
           </div>
         </div>
       </ContextMenuTrigger>
@@ -65,6 +70,7 @@ const MessageCard: FC<Props> = ({ message }) => {
                 message.reaction === reaction && 'bg-primary/50'
               )}
               key={index}
+              onClick={() => onReaction(reaction, message._id)}
             >
               {reaction}
             </div>
