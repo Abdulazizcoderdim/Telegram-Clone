@@ -1,16 +1,8 @@
 const io = require('socket.io')(5000, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+  cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 785cd3325efc713c2a60ae281e53768b1555123f
-let users = [];
+let users = []; // {user, socketId}
 
 const addOnlineUser = (user, socketId) => {
   const checkUser = users.find(u => u.user._id === user._id);
@@ -25,7 +17,7 @@ const getSocketId = userId => {
 };
 
 io.on('connection', socket => {
-  console.log(`user connected: ${socket.id}`);
+  console.log('User connected', socket.id);
 
   socket.on('addOnlineUser', user => {
     addOnlineUser(user, socket.id);
@@ -55,14 +47,40 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('updateMessage', ({ updateMessage, receiver, sender }) => {
+  socket.on('updateMessage', ({ updatedMessage, receiver, sender }) => {
     const receiverSocketId = getSocketId(receiver._id);
-    if(receiverSocketId){
-      socket.to(receiverSocketId).emit('getUpdatedMessage', { updateMessage, sender, receiver });
+    if (receiverSocketId) {
+      socket
+        .to(receiverSocketId)
+        .emit('getUpdatedMessage', { updatedMessage, sender, receiver });
     }
-  })
+  });
+
+  socket.on(
+    'deleteMessage',
+    ({ deletedMessage, filteredMessages, sender, receiver }) => {
+      const receiverSocketId = getSocketId(receiver._id);
+      if (receiverSocketId) {
+        socket
+          .to(receiverSocketId)
+          .emit('getDeletedMessage', {
+            deletedMessage,
+            sender,
+            filteredMessages,
+          });
+      }
+    }
+  );
+
+  // socket.on('typing', ({ receiver, sender, message }) => {
+  //   const receiverSocketId = getSocketId(receiver._id);
+  //   if (receiverSocketId) {
+  //     socket.to(receiverSocketId).emit('getTyping', { sender, message });
+  //   }
+  // });
 
   socket.on('disconnect', () => {
+    console.log('User disconnected', socket.id);
     users = users.filter(u => u.socketId !== socket.id);
     io.emit('getOnlineUsers', users);
   });

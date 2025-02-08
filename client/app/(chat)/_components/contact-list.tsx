@@ -8,39 +8,46 @@ import { CONST } from '@/lib/constants';
 import { cn, sliceText } from '@/lib/utils';
 import { IUser } from '@/types';
 import { format } from 'date-fns';
-import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { FC, useState } from 'react';
 import Settings from './settings';
 
-type Props = {
+interface Props {
   contacts: IUser[];
-};
-
+}
 const ContactList: FC<Props> = ({ contacts }) => {
   const [query, setQuery] = useState('');
-  const router = useRouter();
-  const { currentContact, setCurrentContact } = useCurrentContact();
-  const { onlineUsers } = useAuth();
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.email.toLowerCase().includes(query.toLowerCase())
-  );
+  const { onlineUsers } = useAuth();
+  const { setCurrentContact, currentContact } = useCurrentContact();
+  const { data: session } = useSession();
+
+  const filteredContacts = contacts
+    .filter(contact =>
+      contact.email.toLowerCase().includes(query.toLowerCase())
+    )
+    .sort((a, b) => {
+      const dateA = a.lastMessage?.updatedAt
+        ? new Date(a.lastMessage.updatedAt).getTime()
+        : 0;
+      const dateB = b.lastMessage?.updatedAt
+        ? new Date(b.lastMessage.updatedAt).getTime()
+        : 0;
+      return dateB - dateA;
+    });
 
   const renderContact = (contact: IUser) => {
     const onChat = () => {
       if (currentContact?._id === contact._id) return;
-
       setCurrentContact(contact);
-      router.push(`/?chat=${contact._id}`);
     };
 
     return (
       <div
         className={cn(
-          'flex justify-between items-center cursor-pointer hover:bg-secondary/50 p-2',
-          {
-            'bg-secondary/50': currentContact?._id === contact._id,
-          }
+          'flex justify-between items-center cursor-pointer hover:bg-secondary/50 md:p-2',
+          currentContact?._id === contact._id && 'bg-secondary/50'
         )}
         onClick={onChat}
       >
@@ -57,35 +64,63 @@ const ContactList: FC<Props> = ({ contacts }) => {
               </AvatarFallback>
             </Avatar>
             {onlineUsers.some(user => user._id === contact._id) && (
-              <div className="size-3 bg-green-500 absolute rounded-full bottom-0 right-0 !z-50" />
+              <div className="size-3 bg-green-500 absolute rounded-full bottom-0 right-0 !z-40" />
             )}
           </div>
 
-          <div>
+          <div className="max-md:hidden">
             <h2 className="capitalize line-clamp-1 text-sm">
-              {contact.email.split('@')[0].length > 15
-                ? contact.email.split('@')[0].slice(0, 15) + '...'
-                : contact.email.split('@')[0]}
+              {contact.email.split('@')[0]}
             </h2>
-            <p
-              className={cn(
-                'text-xs line-clamp-1',
-                contact.lastMessage
-                  ? contact.lastMessage.status !== CONST.READ
-                    ? 'text-foreground'
+            {contact.lastMessage?.image && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src={contact.lastMessage.image}
+                  alt={contact.email}
+                  width={20}
+                  height={20}
+                  className="object-cover"
+                />
+                <p
+                  className={cn(
+                    'text-xs line-clamp-1',
+                    contact.lastMessage
+                      ? contact.lastMessage?.sender._id ===
+                        session?.currentUser?._id
+                        ? 'text-muted-foreground'
+                        : contact.lastMessage.status !== CONST.READ
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  Photo
+                </p>
+              </div>
+            )}
+            {!contact.lastMessage?.image && (
+              <p
+                className={cn(
+                  'text-xs line-clamp-1',
+                  contact.lastMessage
+                    ? contact.lastMessage?.sender._id ===
+                      session?.currentUser?._id
+                      ? 'text-muted-foreground'
+                      : contact.lastMessage.status !== CONST.READ
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
                     : 'text-muted-foreground'
-                  : 'text-muted-foreground'
-              )}
-            >
-              {contact.lastMessage
-                ? sliceText(contact.lastMessage.text, 20)
-                : 'No messages yet'}
-            </p>
+                )}
+              >
+                {contact.lastMessage
+                  ? sliceText(contact.lastMessage.text, 25)
+                  : 'No messages yet'}
+              </p>
+            )}
           </div>
         </div>
-
         {contact.lastMessage && (
-          <div className="self-end">
+          <div className="self-end max-md:hidden">
             <p className="text-xs text-muted-foreground">
               {format(contact.lastMessage.updatedAt, 'hh:mm a')}
             </p>
@@ -98,13 +133,13 @@ const ContactList: FC<Props> = ({ contacts }) => {
   return (
     <>
       {/* Top bar */}
-      <div className="flex items-center bg-background pl-2 sticky top-0">
+      <div className="flex items-center bg-background md:pl-2 sticky top-0 z-50">
         <Settings />
-        <div className="m-2 w-full">
+        <div className="md:m-2 w-full max-md:hidden">
           <Input
+            className="bg-secondary"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="bg-secondary"
             type="text"
             placeholder="Search..."
           />
@@ -112,8 +147,8 @@ const ContactList: FC<Props> = ({ contacts }) => {
       </div>
       <div className="max-md:mt-2">
         {filteredContacts.length === 0 ? (
-          <div className="w-full h-[95vh] text-muted-foreground flex justify-center items-center text-center">
-            <p>No contacts found</p>
+          <div className="w-full h-[95vh] flex justify-center items-center text-center text-muted-foreground">
+            <p>Contact list is empty</p>
           </div>
         ) : (
           filteredContacts.map(contact => (

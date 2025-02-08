@@ -19,7 +19,6 @@ interface Props {
   contactForm: UseFormReturn<z.infer<typeof emailSchema>>;
   onCreateContact: (values: z.infer<typeof emailSchema>) => void;
 }
-
 const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
   const { isCreating } = useLoading();
 
@@ -28,8 +27,8 @@ const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
       <div className="flex justify-center items-center z-50 w-full">
         <div className="flex flex-col items-center gap-4">
           <FaTelegram size={120} className="dark:text-blue-400 text-blue-500" />
-          <h1 className="text-3xl font-sourGummy font-bold">
-            Add contact to start a chatting
+          <h1 className="text-3xl font-spaceGrotesk font-bold">
+            Add contacts to start chatting
           </h1>
           <Form {...contactForm}>
             <form
@@ -44,8 +43,8 @@ const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
                     <Label>Email</Label>
                     <FormControl>
                       <Input
-                        disabled={isCreating}
                         placeholder="example@gmail.com"
+                        disabled={isCreating}
                         className="h-10 bg-secondary"
                         {...field}
                       />
@@ -55,10 +54,10 @@ const AddContact: FC<Props> = ({ contactForm, onCreateContact }) => {
                 )}
               />
               <Button
-                disabled={isCreating}
                 type="submit"
                 className="w-full"
                 size={'lg'}
+                disabled={isCreating}
               >
                 Submit
               </Button>
