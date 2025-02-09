@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "socket.js",
   "scripts": {
+    "start": "node socket.js",
     "socket": "nodemon socket.js"
   },
   "keywords": [],
