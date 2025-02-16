@@ -24,6 +24,7 @@ const MessageCard: FC<Props> = ({ message, onReaction, onDeleteMessage }) => {
 
   const reactions = ['👍', '😂', '❤️', '😍', '👎'];
 
+  
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
