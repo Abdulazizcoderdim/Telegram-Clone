@@ -2,7 +2,6 @@ import { authOptions } from '@/lib/auth-options';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { FaTelegram } from 'react-icons/fa';
-import Social from './_component/social';
 import StateAuth from './_component/state';
 
 const Page = async () => {
@@ -16,7 +15,6 @@ const Page = async () => {
         <h1 className="text-4xl font-bold">Telegram</h1>
       </div>
       <StateAuth />
-      <Social />
     </div>
   );
 };
