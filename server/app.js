@@ -7,6 +7,7 @@ const errorMiddleware = require('./middlewares/error.middleware');
 
 const app = express();
 
+
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());

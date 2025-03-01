@@ -6,6 +6,7 @@ const io = require('socket.io')(port, {
   cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
+
 let users = []; // {user, socketId}
 
 const addOnlineUser = (user, socketId) => {
