@@ -12,7 +12,7 @@ export const ourFileRouter = {
       if (!token) throw new UploadThingError('Unauthorized');
       return { token };
     })
-    // @ts-ignore
+    // @ts-expect-error: UploadThing kutubxonasidagi noaniqlik tufayli
     .onUploadComplete(async ({ file }) => {
       return file;
     }),

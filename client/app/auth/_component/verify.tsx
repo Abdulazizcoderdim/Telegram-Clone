@@ -23,13 +23,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const Verify = () => {
   const { email } = useAuth();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
