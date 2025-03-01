@@ -1,26 +1,26 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
-import ContactList from './_components/contact-list';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import AddContact from './_components/add-contact';
-import { useCurrentContact } from '@/hooks/use-current';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { emailSchema, messageSchema } from '@/lib/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import TopChat from './_components/top-chat';
-import Chat from './_components/chat';
-import { useLoading } from '@/hooks/use-loading';
-import { axiosClient } from '@/http/axios';
-import { useSession } from 'next-auth/react';
-import { generateToken } from '@/lib/generate-token';
-import { IError, IMessage, IUser } from '@/types';
-import { toast } from '@/hooks/use-toast';
-import { io } from 'socket.io-client';
-import { useAuth } from '@/hooks/use-auth';
 import useAudio from '@/hooks/use-audio';
+import { useAuth } from '@/hooks/use-auth';
+import { useCurrentContact } from '@/hooks/use-current';
+import { useLoading } from '@/hooks/use-loading';
+import { toast } from '@/hooks/use-toast';
+import { axiosClient } from '@/http/axios';
 import { CONST } from '@/lib/constants';
+import { generateToken } from '@/lib/generate-token';
+import { emailSchema, messageSchema } from '@/lib/validation';
+import { IError, IMessage, IUser } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { io } from 'socket.io-client';
+import { z } from 'zod';
+import AddContact from './_components/add-contact';
+import Chat from './_components/chat';
+import ContactList from './_components/contact-list';
+import TopChat from './_components/top-chat';
 
 const HomePage = () => {
   const [contacts, setContacts] = useState<IUser[]>([]);
@@ -95,7 +95,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    socket.current = io('ws://localhost:5000');
+    socket.current = io('ws://telegram-clone-1.onrender.com');
   }, []);
 
   useEffect(() => {
